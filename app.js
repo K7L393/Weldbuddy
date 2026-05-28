@@ -1,6 +1,6 @@
 const parseBold = (str) => {
     if (!str) return '';
-    return str.replace(/\*\*(.*?)\*\//g, '<strong>$1</strong>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    return str.replace(/\*\*(.*?)\*\//g, '<strong>$1</strong>').replace(/\*\*(.*?)\*\//g, '<strong>$1</strong>');
 };
 
 // GLOBAL APP STATES
@@ -111,8 +111,8 @@ const WeldingProcessRegistry = {
             return `
                 <div class="space-y-4 font-mono text-sm text-blue-400">
                     <div>• GMAW Calculator Core Active</div>
-                    <div>• Computed Structural Base: ${baseThicknessVal}mm Plate</div>
-                    <div class="text-emerald-400 font-bold">• Calculated Safe Output: ${specs.amperage} Amps</div>
+                    <div>• Computed Base: ${baseThicknessVal}mm Structural Section</div>
+                    <div class="text-emerald-400 font-bold">• Calculated Output: ${specs.amperage} Amps</div>
                 </div>`;
         }
     },
@@ -150,7 +150,7 @@ const WeldingProcessRegistry = {
                 amperage: Math.round(targetAmperage),
                 voltage: referenceVoltage.toFixed(1),
                 wfs: digValue.toFixed(0), 
-                gas: "None (Manual Flux Covering Slag Shield)",
+                gas: "None (Manual Flux Electrode Slag Shield)",
                 vBar: Math.min(Math.max(((targetAmperage - 50) / 150) * 100, 10), 100) + "%",
                 wfsBar: digValue + "%",
                 primaryVal: Math.round(targetAmperage) + " Amps",
@@ -162,8 +162,8 @@ const WeldingProcessRegistry = {
             return `
                 <div class="space-y-4 font-mono text-sm text-orange-400">
                     <div>• SMAW Engine Core Active</div>
-                    <div>• Constant Density Scale: Core Wire Diameter Base</div>
-                    <div class="text-emerald-400 font-bold">• Core Structural Output Amps: ${specs.amperage} A</div>
+                    <div>• Constant Mass Wire Core Parameters Applied</div>
+                    <div class="text-emerald-400 font-bold">• Core Output: ${specs.amperage} Amps</div>
                 </div>`;
         }
     }
@@ -174,10 +174,6 @@ function switchProcess(proc) {
     const gmawBtn = document.getElementById('proc-btn-gmaw');
     const smawBtn = document.getElementById('proc-btn-smaw');
     const consLabel = document.getElementById('label-consumable');
-    const primLabel = document.getElementById('label-primary-display');
-    const secLabel = document.getElementById('label-secondary-display');
-    const coachTitleA = document.getElementById('coach-title-primary');
-    const coachTitleC = document.getElementById('coach-title-tertiary');
     const sizeWrapper = document.getElementById('weld-size-wrapper');
     const bgGlow = document.getElementById('bg-glow');
 
@@ -187,11 +183,7 @@ function switchProcess(proc) {
         if (bgGlow) bgGlow.style.background = "radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, #09090b 100%)";
         if (gmawBtn) gmawBtn.className = "py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all bg-theme text-zinc-950 cursor-pointer";
         if (smawBtn) smawBtn.className = "py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer";
-        consLabel.innerText = "Wire Type";
-        primLabel.innerText = "Wire Voltage";
-        secLabel.innerText = "Wire Feed Speed";
-        coachTitleA.innerText = "Bead Manipulation (Stringer vs Weave)";
-        coachTitleC.innerText = "Torch Stick-Out (Distance from tip to work)";
+        if (consLabel) consLabel.innerText = "Wire Type";
         if (sizeWrapper) sizeWrapper.classList.remove('hidden');
     } else {
         document.documentElement.style.setProperty('--theme-primary', '249 115 22');
@@ -199,11 +191,7 @@ function switchProcess(proc) {
         if (bgGlow) bgGlow.style.background = "radial-gradient(ellipse at center, rgba(249, 115, 22, 0.1) 0%, #09090b 100%)";
         if (smawBtn) smawBtn.className = "py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all bg-theme text-zinc-950 cursor-pointer";
         if (gmawBtn) gmawBtn.className = "py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer";
-        consLabel.innerText = "Electrode Rod";
-        primLabel.innerText = "Target Amperage";
-        secLabel.innerText = "Arc Force / Dig";
-        coachTitleA.innerText = "Rod Manipulation (Stringer vs Whip Technique)";
-        coachTitleC.innerText = "Arc Length Control (Distance from core to work)";
+        if (consLabel) consLabel.innerText = "Electrode Rod";
         if (sizeWrapper) sizeWrapper.classList.add('hidden');
     }
     
@@ -247,7 +235,7 @@ function updateDropdownOptions() {
         } else {
             if (jointLabel) jointLabel.innerText = "Joint Type";
             if (profileLabel) profileLabel.innerText = "Weld Size";
-            jointSelect.innerHTML = `<option value="T-Fillet">T-Fillet Joint</option><option value="Butt Weld">Butt Weld (V-Groove)</option><option value="Open Corner">Open Corner Joint</option><option value="Lap Joint">Lap Joint</option>`;
+            jointSelect.innerHTML = `<option value="T-Fillet">T-Fillet Joint</option><option value="Butt Weld">Butt Weld (V-Groove)</option><option value="Lap Joint">Lap Joint</option>`;
             profileSelect.innerHTML = `<option value="6mm Single-Pass">6mm Single-Pass Fillet</option><option value="8mm Single-Pass">8mm Single-Pass Fillet</option><option value="8mm Multi-Pass">8mm Multi-Pass (Root + Cap)</option><option value="10mm Multi-Pass">10mm Multi-Pass (3-Pass Run)</option><option value="12mm Multi-Pass">12mm Multi-Pass (Multi-Layer Matrix)</option>`;
         }
         wireSelect.innerHTML = `
@@ -270,13 +258,11 @@ function updateDropdownOptions() {
                 <option value="ESAB Warrior">ESAB Warrior (400i/500i)</option>
                 <option value="ESAB Fabricator">ESAB Fabricator EM (401i/501i)</option>
                 <option value="ESAB Rebel">ESAB Rebel (235ic/320ic)</option>
-                <option value="ESAB Aristo">ESAB Aristo Mig (400i/500i)</option>
             </optgroup>
             <optgroup label="Miller Welder Line" class="bg-zinc-900 text-zinc-400">
                 <option value="Miller XMT">Miller XMT Set (350/450 Inverter)</option>
                 <option value="Miller Delta-Weld">Miller Delta-Weld Workshop Unit</option>
                 <option value="Miller Invision">Miller Invision (352/452 MPa)</option>
-                <option value="Miller Dimension">Miller Dimension 650 Station</option>
             </optgroup>
         `;
     } else {
@@ -317,11 +303,21 @@ function updateDropdownOptions() {
             </optgroup>
         `;
     }
-    
     if (jointSelect.querySelector(`option[value="${prevJoint}"]`)) jointSelect.value = prevJoint;
     if (profileSelect.querySelector(`option[value="${prevProfile}"]`)) profileSelect.value = prevProfile;
     if (wireSelect.querySelector(`option[value="${prevWire}"]`)) wireSelect.value = prevWire;
     if (machineSelect.querySelector(`option[value="${prevMachine}"]`)) machineSelect.value = prevMachine;
+}
+
+function getSelectedValues() {
+    return {
+        thickness: document.getElementById('select-thickness').value,
+        position: document.getElementById('select-position').value,
+        wire: document.getElementById('select-wire').value,
+        joint: document.getElementById('select-joint').value,
+        machine: document.getElementById('select-machine').value,
+        profile: document.getElementById('select-profile') ? document.getElementById('select-profile').value : ""
+    };
 }
 
 function injectParam() { updateDropdownOptions(); if (isPanelOpen) renderInitialResponse(); }
@@ -329,16 +325,6 @@ function handleSubmit() { document.getElementById('results-panel').style.transfo
 function minimizeResultsPanel() { document.getElementById('results-panel').style.transform = 'translateY(100%)'; isPanelOpen = false; }
 function openMathDashboard() { const s = getSelectedValues(); const currentEngine = WeldingProcessRegistry[activeProcess]; const specs = currentEngine.calculate(s); document.getElementById('math-content-area').innerHTML = currentEngine.renderMathReport(s, specs); document.getElementById('math-panel').style.transform = 'translateY(0)'; isMathPanelOpen = true; }
 function minimizeMathPanel() { document.getElementById('math-panel').style.transform = 'translateY(100%)'; isMathPanelOpen = false; }
-
-function calculateRealtimeHeatInput(shouldLog = false) {
-    const v = parseFloat(document.getElementById('hi-volt').value) || 0;
-    const a = parseFloat(document.getElementById('hi-amp').value) || 0;
-    const ts = parseFloat(document.getElementById('hi-ts').value) || 0;
-    if (!v || !a || !ts) return;
-    const heatInput = (v * a * 60) / (ts * 1000);
-    const outField = document.getElementById('hi-result');
-    if (outField) outField.innerText = heatInput.toFixed(2) + " kJ/mm";
-}
 
 function handleReset() {
     minimizeResultsPanel(); minimizeMathPanel();
@@ -348,9 +334,7 @@ function handleReset() {
     updateDropdownOptions();
     document.getElementById('select-wire').value = activeProcess === "gmaw" ? "1.0mm ER70S-6" : "3.2mm E7018";
     document.getElementById('display-volt').innerText = "0.0 V";
-    document.getElementById('bar-volt').style.width = "0%";
     document.getElementById('display-wfs').innerText = "0.0 m/min";
-    document.getElementById('bar-wfs').style.width = "0%";
     document.getElementById('chat-thread').innerHTML = '';
     document.getElementById('shop-alert-banner').classList.add('hidden');
     document.getElementById('rod-validation-banner').classList.add('hidden');
@@ -361,10 +345,8 @@ function renderInitialResponse() {
     const currentEngine = WeldingProcessRegistry[activeProcess];
     const specs = currentEngine.calculate(s);
     
-    const requirementsBox = document.getElementById('target-requirements-display');
-    if (requirementsBox) requirementsBox.innerText = `${s.thickness} // ${s.position} // ${s.wire}`;
+    document.getElementById('target-requirements-display').innerText = `${s.thickness} // ${s.position} // ${s.wire}`;
 
-    // AUTO-SWITCH ACCENT CAPTIONS DEPENDING ON THE BOOTH MODE SPECIFICATION
     const primLabel = document.getElementById('label-primary-display');
     const secLabel = document.getElementById('label-secondary-display');
     if (activeProcess === "gmaw") {
@@ -381,10 +363,10 @@ function renderInitialResponse() {
     document.getElementById('bar-wfs').style.width = specs.wfsBar;
     document.getElementById('display-gas').innerText = specs.gas;
 
-    const vInput = document.getElementById('hi-volt');
-    const aInput = document.getElementById('hi-amp');
-    if (vInput) vInput.value = parseFloat(specs.voltage) || 0;
-    if (aInput) aInput.value = parseInt(specs.amperage) || 0;
+    const vField = document.getElementById('hi-volt');
+    const aField = document.getElementById('hi-amp');
+    if (vField) vField.value = parseFloat(specs.voltage) || 0;
+    if (aField) aField.value = parseInt(specs.amperage) || 0;
 
     const validationBanner = document.getElementById('rod-validation-banner');
     const validationText = document.getElementById('rod-validation-text');
