@@ -7,7 +7,7 @@ const parseBold = (str) => {
 // APPLICATION CONFIGURATION
 // ========================================================
 // Replace this with your secure live backend URL (from Railway or your Cloudflare Tunnel)
-const BACKEND_URL = "https://swift-signs-refuse.loca.lt/api/coach";
+const BACKEND_URL = "https://ed681a1aa133fd17-109-146-29-187.serveousercontent.com/api/coach";
 
 // GLOBAL APP STATES
 let isPanelOpen = false;
