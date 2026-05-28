@@ -108,13 +108,10 @@ const WeldingProcessRegistry = {
         renderMathReport: function(s, specs) {
             let baseThicknessVal = parseInt(s.thickness) || 6;
             if (s.thickness === "25mm+") baseThicknessVal = 28;
-            let positionCoeff = s.position === "3G" ? 0.75 : s.position === "4G" ? 0.80 : s.position === "6G" ? 0.72 : 1.0;
-
             return `
                 <div class="space-y-4 font-mono text-sm text-blue-400">
                     <div>• GMAW Calculator Core Active</div>
                     <div>• Computed Structural Base: ${baseThicknessVal}mm Plate</div>
-                    <div>• Position Scalar Coefficient: ${positionCoeff}x</div>
                     <div class="text-emerald-400 font-bold">• Calculated Safe Output: ${specs.amperage} Amps</div>
                 </div>`;
         }
@@ -153,7 +150,7 @@ const WeldingProcessRegistry = {
                 amperage: Math.round(targetAmperage),
                 voltage: referenceVoltage.toFixed(1),
                 wfs: digValue.toFixed(0), 
-                gas: "None (Manual Flux Slag Shield)",
+                gas: "None (Manual Flux Covering Slag Shield)",
                 vBar: Math.min(Math.max(((targetAmperage - 50) / 150) * 100, 10), 100) + "%",
                 wfsBar: digValue + "%",
                 primaryVal: Math.round(targetAmperage) + " Amps",
@@ -165,14 +162,13 @@ const WeldingProcessRegistry = {
             return `
                 <div class="space-y-4 font-mono text-sm text-orange-400">
                     <div>• SMAW Engine Core Active</div>
-                    <div>• Mass Core Diameter Selection Baseline Applied</div>
+                    <div>• Constant Density Scale: Core Wire Diameter Base</div>
                     <div class="text-emerald-400 font-bold">• Core Structural Output Amps: ${specs.amperage} A</div>
                 </div>`;
         }
     }
 };
 
-// CORE COLOR STYLING AND DECOUPLING CONTROLLER (PATCHED INSTANT UPDATES)
 function switchProcess(proc) {
     activeProcess = proc;
     const gmawBtn = document.getElementById('proc-btn-gmaw');
@@ -282,19 +278,6 @@ function updateDropdownOptions() {
                 <option value="Miller Invision">Miller Invision (352/452 MPa)</option>
                 <option value="Miller Dimension">Miller Dimension 650 Station</option>
             </optgroup>
-            <optgroup label="Lincoln Welder Line" class="bg-zinc-900 text-zinc-400">
-                <option value="Lincoln Flextec">Lincoln Flextec Set (450/500/650)</option>
-                <option value="Lincoln Power Wave">Lincoln Power Wave Digital Unit</option>
-                <option value="Lincoln Idealarc">Lincoln Idealarc (DC400/DC600 Transformer)</option>
-            </optgroup>
-            <optgroup label="Fronius Welder Line" class="bg-zinc-900 text-zinc-400">
-                <option value="Fronius TransSteel">Fronius TransSteel (3500/5000)</option>
-                <option value="Fronius TPSi">Fronius TPS/i Intelligent (400i/500i)</option>
-            </optgroup>
-            <optgroup label="Kemppi Welder Line" class="bg-zinc-900 text-zinc-400">
-                <option value="Kemppi FastMig">Kemppi FastMig (M/X Heavy Duty)</option>
-                <option value="Kemppi X5">Kemppi X5 FastMig Station</option>
-            </optgroup>
         `;
     } else {
         if (position === "6G") {
@@ -320,14 +303,10 @@ function updateDropdownOptions() {
                 <option value="2.5mm E6010">2.5mm E6010 Deep-Dig Rod</option>
                 <option value="3.2mm E6010">3.2mm E6010 Deep-Dig Rod</option>
             </optgroup>
-            <optgroup label="Rutile Utility Rod (SMAW)" class="bg-zinc-900 text-zinc-400">
-                <option value="2.5mm E6013">2.5mm E6013 General Rod</option>
-                <option value="3.2mm E6013">3.2mm E6013 General Rod</option>
-            </optgroup>
         `;
         machineSelect.innerHTML = `
             <option value="Generic Standard CC Set">Standard CC Inverter Set</option>
-            <optgroup label="Field Engine Drives (Site Work)" class="bg-zinc-900 text-zinc-400">
+            <optgroup label="Field Engine Drives" class="bg-zinc-900 text-zinc-400">
                 <option value="Lincoln Vantage">Lincoln Vantage Diesel Plant</option>
                 <option value="Miller Trailblazer">Miller Trailblazer (325 Drive)</option>
                 <option value="Lincoln SA-200">Lincoln SA-200 Classic Generator</option>
@@ -335,15 +314,6 @@ function updateDropdownOptions() {
             <optgroup label="Portable Field Inverters" class="bg-zinc-900 text-zinc-400">
                 <option value="Kemppi Minarc">Kemppi Minarc Site Pack</option>
                 <option value="Miller Maxstar">Miller Maxstar Portable Box</option>
-                <option value="Fronius TransPocket">Fronius TransPocket System</option>
-            </optgroup>
-            <optgroup label="Cross-Capable Workshop Plants" class="bg-zinc-900 text-zinc-400">
-                <option value="ESAB Warrior">ESAB Warrior (400i/500i)</option>
-                <option value="ESAB Rebel">ESAB Rebel (235ic/320ic)</option>
-                <option value="Miller XMT">Miller XMT Set (350/450 Inverter)</option>
-                <option value="Miller Dimension">Miller Dimension 650 Station</option>
-                <option value="Lincoln Flextec">Lincoln Flextec Set (450/500/650)</option>
-                <option value="Lincoln Idealarc">Lincoln Idealarc Transformer</option>
             </optgroup>
         `;
     }
@@ -359,6 +329,16 @@ function handleSubmit() { document.getElementById('results-panel').style.transfo
 function minimizeResultsPanel() { document.getElementById('results-panel').style.transform = 'translateY(100%)'; isPanelOpen = false; }
 function openMathDashboard() { const s = getSelectedValues(); const currentEngine = WeldingProcessRegistry[activeProcess]; const specs = currentEngine.calculate(s); document.getElementById('math-content-area').innerHTML = currentEngine.renderMathReport(s, specs); document.getElementById('math-panel').style.transform = 'translateY(0)'; isMathPanelOpen = true; }
 function minimizeMathPanel() { document.getElementById('math-panel').style.transform = 'translateY(100%)'; isMathPanelOpen = false; }
+
+function calculateRealtimeHeatInput(shouldLog = false) {
+    const v = parseFloat(document.getElementById('hi-volt').value) || 0;
+    const a = parseFloat(document.getElementById('hi-amp').value) || 0;
+    const ts = parseFloat(document.getElementById('hi-ts').value) || 0;
+    if (!v || !a || !ts) return;
+    const heatInput = (v * a * 60) / (ts * 1000);
+    const outField = document.getElementById('hi-result');
+    if (outField) outField.innerText = heatInput.toFixed(2) + " kJ/mm";
+}
 
 function handleReset() {
     minimizeResultsPanel(); minimizeMathPanel();
@@ -380,14 +360,31 @@ function renderInitialResponse() {
     const s = getSelectedValues();
     const currentEngine = WeldingProcessRegistry[activeProcess];
     const specs = currentEngine.calculate(s);
-    const noteText = document.getElementById('user-input').value.trim();
     
-    document.getElementById('target-requirements-display').innerText = `${s.thickness} // ${s.position} // ${s.wire}`;
+    const requirementsBox = document.getElementById('target-requirements-display');
+    if (requirementsBox) requirementsBox.innerText = `${s.thickness} // ${s.position} // ${s.wire}`;
+
+    // AUTO-SWITCH ACCENT CAPTIONS DEPENDING ON THE BOOTH MODE SPECIFICATION
+    const primLabel = document.getElementById('label-primary-display');
+    const secLabel = document.getElementById('label-secondary-display');
+    if (activeProcess === "gmaw") {
+        if (primLabel) primLabel.innerText = "Wire Voltage";
+        if (secLabel) secLabel.innerText = "Wire Feed Speed";
+    } else {
+        if (primLabel) primLabel.innerText = "Target Amperage";
+        if (secLabel) secLabel.innerText = "Arc Force / Dig";
+    }
+
     document.getElementById('display-volt').innerText = specs.primaryVal;
     document.getElementById('bar-volt').style.width = specs.vBar;
     document.getElementById('display-wfs').innerText = specs.secondaryVal;
     document.getElementById('bar-wfs').style.width = specs.wfsBar;
     document.getElementById('display-gas').innerText = specs.gas;
+
+    const vInput = document.getElementById('hi-volt');
+    const aInput = document.getElementById('hi-amp');
+    if (vInput) vInput.value = parseFloat(specs.voltage) || 0;
+    if (aInput) aInput.value = parseInt(specs.amperage) || 0;
 
     const validationBanner = document.getElementById('rod-validation-banner');
     const validationText = document.getElementById('rod-validation-text');
@@ -397,12 +394,12 @@ function renderInitialResponse() {
     if (activeProcess === "smaw" && s.wire) {
         const isRootRun = s.joint && (s.joint.includes("Root") || s.joint.includes("V-Groove") || s.position === "6G");
         if (isRootRun && s.wire.includes("E7018")) {
-            validationText.innerHTML = `Your parameters specify an open-root groove or critical 6G pipe run, but you have an **E7018 low-hydrogen rod** loaded. For optimized structural safety on Pass 1, consider burning a fast-freezing **2.5mm or 3.2mm E6010 cellulosic rod** to achieve full root penetration before filling with E7018.`;
-            validationBanner.classList.remove('hidden');
+            if (validationText) validationText.innerHTML = `Your parameters specify an open-root groove or critical 6G pipe run, but you have an **E7018 low-hydrogen rod** loaded. For optimized structural safety on Pass 1, consider burning a fast-freezing **2.5mm or 3.2mm E6010 cellulosic rod** to achieve full root penetration before filling with E7018.`;
+            if (validationBanner) validationBanner.classList.remove('hidden');
         } else if (!isRootRun && s.wire.includes("E6010")) {
-            validationText.innerHTML = `You have an aggressive **E6010 deep-digging rod** selected for a solid structural fillet or lap joint. For non-open-gap structural elements, switch to an **E7018 low-hydrogen electrode** to guarantee optimum mechanical yield metrics.`;
-            validationBanner.classList.remove('hidden');
-        } else { validationBanner.classList.add('hidden'); }
+            if (validationText) validationText.innerHTML = `You have an aggressive **E6010 deep-digging rod** selected for a solid structural fillet or lap joint. For non-open-gap structural elements, switch to an **E7018 low-hydrogen electrode** to guarantee optimum mechanical yield metrics.`;
+            if (validationBanner) validationBanner.classList.remove('hidden');
+        } else { if (validationBanner) validationBanner.classList.add('hidden'); }
     } else { if (validationBanner) validationBanner.classList.add('hidden'); }
 
     const alertBanner = document.getElementById('shop-alert-banner');
@@ -411,10 +408,10 @@ function renderInitialResponse() {
     const isSinglePass = s.profile && s.profile.includes("Single-Pass");
 
     if (activeProcess === "gmaw" && thicknessValue >= 20 && specs.wireDiameter <= 1.0 && !isSinglePass) {
-        alertBanner.className = "bg-blue-500/10 border border-blue-500/20 text-blue-300 p-4 rounded-xl text-base mb-4";
-        alertTitle.innerText = "💡 Production Efficiency Tip:";
-        alertText.innerText = "While 1.0mm wire easily achieves full code compliance via multi-pass stacking, stepping up to 1.2mm cored wire will significantly cut down your arc time.";
-        alertBanner.classList.remove('hidden');
+        if (alertBanner) alertBanner.className = "bg-blue-500/10 border border-blue-500/20 text-blue-300 p-4 rounded-xl text-base mb-4";
+        if (alertTitle) alertTitle.innerText = "💡 Production Efficiency Tip:";
+        if (alertText) alertText.innerText = "While 1.0mm wire easily achieves full code compliance via multi-pass stacking, stepping up to 1.2mm cored wire will significantly cut down your arc time.";
+        if (alertBanner) alertBanner.classList.remove('hidden');
     } else { if (alertBanner) alertBanner.classList.add('hidden'); }
 
     const mpSection = document.getElementById('multi-pass-section');
@@ -429,9 +426,9 @@ function renderInitialResponse() {
             document.getElementById('mp-pass1').innerText = `${(parsedVolt - 1.5).toFixed(1)}V @ ${(parsedWfs - 1.0).toFixed(1)}m`;
             document.getElementById('mp-pass2').innerText = `${specs.voltage}V @ ${specs.wfs}m`;
             document.getElementById('mp-pass3').innerText = `${(parsedVolt - 0.5).toFixed(1)}V @ ${(parsedWfs - 0.4).toFixed(1)}m`;
-            mpAdvice1.innerText = "Deep root penetration run. Keep gun completely perpendicular.";
-            mpAdvice2.innerText = "Fill pass layers. Maintain fluid wash on bevel borders.";
-            mpAdvice3.innerText = "Cap layer pass. Keep travel swift to flatten reinforcing crown profile.";
+            if (mpAdvice1) mpAdvice1.innerText = "Deep root penetration run. Keep gun completely perpendicular.";
+            if (mpAdvice2) mpAdvice2.innerText = "Fill pass layers. Maintain fluid wash on bevel borders.";
+            if (mpAdvice3) mpAdvice3.innerText = "Cap layer pass. Keep travel swift to flatten reinforcing crown profile.";
         } else {
             let rootRod = s.wire; let fillRod = s.wire; let capRod = s.wire;
             if (s.joint && (s.joint.includes("Root") || s.position === "6G")) { rootRod = "2.5mm E6010 (Whip Pass)"; fillRod = "3.2mm E7018 Low-H2"; capRod = "3.2mm E7018 Low-H2"; }
@@ -439,11 +436,11 @@ function renderInitialResponse() {
             document.getElementById('mp-pass1').innerText = `${Math.round(baseAmp * 0.90)} Amps ➔ Rod: ${rootRod}`;
             document.getElementById('mp-pass2').innerText = `${baseAmp} Amps ➔ Rod: ${fillRod}`;
             document.getElementById('mp-pass3').innerText = `${Math.round(baseAmp * 0.94)} Amps ➔ Rod: ${capRod}`;
-            mpAdvice1.innerText = "Root pass current dropped 10% for thermal hole containment.";
-            mpAdvice2.innerText = "Fill current running at 100% capacity threshold for structural side-wall fusion.";
-            mpAdvice3.innerText = "Cap current dropped 6% to freeze manual pool mass and eliminate toe edge undercut.";
+            if (mpAdvice1) mpAdvice1.innerText = "Root pass current dropped 10% for thermal hole containment.";
+            if (mpAdvice2) mpAdvice2.innerText = "Fill current running at 100% capacity threshold for structural side-wall fusion.";
+            if (mpAdvice3) mpAdvice3.innerText = "Cap current dropped 6% to freeze manual pool mass and eliminate toe edge undercut.";
         }
-        mpSection.classList.remove('hidden');
+        if (mpSection) mpSection.classList.remove('hidden');
     } else { if (mpSection) mpSection.classList.add('hidden'); }
 
     let rawBeadText = activeProcess === "gmaw" ? "Run clean stringers. Keep arc line leading corner concise." : "Maintain a tight arc length to stay beneath heavy fluid slag coverings.";
@@ -463,11 +460,13 @@ function switchTab(tab) {
     const specsBtn = document.getElementById('tab-specs-btn'); const techBtn = document.getElementById('tab-tech-btn');
     const specsPanel = document.getElementById('panel-specs'); const techPanel = document.getElementById('panel-tech');
     if (tab === 'specs') {
-        specsBtn.className = "border-b-2 border-theme text-zinc-100 pb-3 transition-all cursor-pointer"; techBtn.className = "border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 pb-3 transition-all cursor-pointer";
-        specsPanel.classList.remove('hidden'); techPanel.classList.add('hidden');
+        if (specsBtn) specsBtn.className = "border-b-2 border-theme text-zinc-100 pb-3 transition-all cursor-pointer";
+        if (techBtn) techBtn.className = "border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 pb-3 transition-all cursor-pointer";
+        if (specsPanel) specsPanel.classList.remove('hidden'); if (techPanel) techPanel.classList.add('hidden');
     } else {
-        techBtn.className = "border-b-2 border-theme text-zinc-100 pb-3 transition-all cursor-pointer"; specsBtn.className = "border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 pb-3 transition-all cursor-pointer";
-        specsPanel.classList.add('hidden'); techPanel.classList.remove('hidden');
+        if (techBtn) techBtn.className = "border-b-2 border-theme text-zinc-100 pb-3 transition-all cursor-pointer";
+        if (specsBtn) specsBtn.className = "border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 pb-3 transition-all cursor-pointer";
+        if (specsPanel) specsPanel.classList.add('hidden'); if (techPanel) techPanel.className = "border-b-2 border-theme text-zinc-100 pb-3 transition-all cursor-pointer";
     }
 }
 function triggerQuickTroubleshoot(defect) { const entry = document.getElementById('follow-up-input'); if (entry) entry.value = `How do I eliminate structural ${defect}?`; sendFollowUp(); }
@@ -479,7 +478,8 @@ function sendFollowUp() {
     thread.innerHTML += `<div class="flex justify-end mt-4"><span class="bg-purple-950/10 text-purple-400 text-base px-4 py-2 rounded-xl border border-purple-500/20 max-w-md font-medium">${questionText}</span></div>`;
     input.value = '';
     const API_KEY = "AIzaSyC1DHTraXG7xqzayZ4eAmfGzW9tKEvZp2U"; const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
-    const systemInstruction = `You are WeldCoach, an elite industrial welding mentor. Provide rapid, concise troubleshooting bullet points under Machine Dial Tuning and Technique. Max 2 sentences per bullet. Context: ${activeProcess}, Amps: ${specs.amperage}, Wire/Rod: ${s.wire}.`;
+    const processContextString = activeProcess === "gmaw" ? `- WIRE: ${s.wire}\n- VOLTAGE: ${specs.voltage}V\n- WFS: ${specs.wfs}m/min` : `- ROD: ${s.wire}\n- AMPS: ${specs.amperage}A\n- DIG: ${specs.wfs}%`;
+    const systemInstruction = `You are WeldCoach, an elite industrial welding mentor. Provide rapid, concise troubleshooting bullet points under Machine Dial Tuning and Technique. Max 2 sentences per bullet. Context: ${activeProcess}, ${processContextString}.`;
     fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: `${systemInstruction}\n\nUser Question: ${questionText}` }] }] }) })
     .then(r => r.json()).then(data => {
         let aiReply = data.candidates[0].content.parts[0].text;
