@@ -7,7 +7,7 @@ const parseBold = (str) => {
 // APPLICATION CONFIGURATION
 // ========================================================
 // Replace this with your secure live backend URL (from Railway or your Cloudflare Tunnel)
-const BACKEND_URL = "https://nenlr-2a00-23c8-7c24-e201-3a87-d5ff-fea7-aa1c.run.pinggy-free.link/api/coach";
+const BACKEND_URL = "https://auhvy-109-146-29-187.run.pinggy-free.link/api/coach";
 
 // GLOBAL APP STATES
 let isPanelOpen = false;
