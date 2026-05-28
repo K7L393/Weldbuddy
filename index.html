@@ -22,6 +22,18 @@
             --theme-glow: rgba(249, 115, 22, 0.1);
         }
 
+        .theme-green {
+            --theme-primary: 34 197 94; 
+            --theme-primary-hover: 22 163 74; 
+            --theme-glow: rgba(34, 197, 94, 0.1);
+        }
+
+        .theme-yellow {
+            --theme-primary: 234 179 8; 
+            --theme-primary-hover: 202 138 4; 
+            --theme-glow: rgba(234, 179, 8, 0.1);
+        }
+
         .text-theme { color: rgb(var(--theme-primary)); }
         .bg-theme { background-color: rgb(var(--theme-primary)); }
         .bg-theme-hover:hover { background-color: rgb(var(--theme-primary-hover)); }
@@ -38,7 +50,7 @@
     <div class="absolute top-4 left-4 right-4 z-40 flex justify-between items-center max-w-2xl mx-auto w-full px-4 md:px-0">
         <button onclick="openMathDashboard()" class="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-xl transition-all cursor-pointer group active:scale-95">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="text-sm font-mono text-zinc-400 group-hover:text-zinc-200 uppercase tracking-wider transition-colors">Engine: WeldBuddy Core v2.9 🔍</span>
+            <span class="text-sm font-mono text-zinc-400 group-hover:text-zinc-200 uppercase tracking-wider transition-colors">Engine: WeldBuddy Core v2.6 🔍</span>
         </button>
 
         <div>
@@ -48,6 +60,8 @@
             <div id="theme-dropdown" class="hidden absolute right-4 mt-2 w-44 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-1 space-y-1">
                 <button onclick="setTheme('blue')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Arc Blue</button>
                 <button onclick="setTheme('orange')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-500"></span> Forge Orange</button>
+                <button onclick="setTheme('green')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500"></span> Shield Green</button>
+                <button onclick="setTheme('yellow')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-yellow-500"></span> Slag Yellow</button>
             </div>
         </div>
     </div>
@@ -61,16 +75,6 @@
         </div>
 
         <div id="search-box" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl transition-all-custom">
-            
-            <div class="grid grid-cols-2 gap-2 bg-zinc-950 p-1 rounded-xl border border-zinc-850 mb-4">
-                <button id="proc-btn-gmaw" onclick="switchProcess('gmaw')" class="py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all bg-theme text-zinc-950 cursor-pointer">
-                    MIG / Flux-Core
-                </button>
-                <button id="proc-btn-smaw" onclick="switchProcess('smaw')" class="py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">
-                    Stick Welding
-                </button>
-            </div>
-
             <label class="block text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Select Your Welding Setup</label>
             <p class="text-sm text-zinc-400 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 mb-4">
                 ⚙️ <span class="text-zinc-200 font-semibold">Calculator Active:</span> Dials are calculated using standard formulas. AI coaching is only active under the Weld Coach tab.
@@ -82,7 +86,7 @@
                     placeholder="Type any custom booth notes here (e.g., tight grating gaps, awkward angle restrictions)..."></textarea>
                 
                 <button id="submit-btn" onclick="handleSubmit()" 
-                    class="w-full bg-theme bg-theme-hover text-zinc-950 font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 uppercase tracking-wider text-base cursor-pointer">
+                    class="w-full bg-theme bg-theme-hover text-zinc-950 font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 uppercase tracking-wider text-base">
                     <span>Get Machine Settings</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
@@ -92,8 +96,8 @@
 
             <div class="grid grid-cols-3 gap-3 text-sm border-t border-zinc-800/60 pt-4 mt-4">
                 <div>
-                    <label id="label-thickness" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Thickness</label>
-                    <select id="select-thickness" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                    <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Thickness</label>
+                    <select id="select-thickness" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
                         <option value="6mm">6mm Material</option>
                         <option value="8mm">8mm Material</option>
                         <option value="10mm">10mm Material</option>
@@ -114,24 +118,71 @@
                     </select>
                 </div>
                 <div>
-                    <label id="label-consumable" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Wire Type</label>
-                    <select id="select-wire" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
-                        </select>
+                    <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Wire Type</label>
+                    <select id="select-wire" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                        <optgroup label="Solid Wire (GMAW)" class="bg-zinc-900 text-zinc-400">
+                            <option value="1.0mm ER70S-6">1.0mm ER70S-6 Solid Wire</option>
+                            <option value="1.2mm ER70S-6">1.2mm ER70S-6 Solid Wire</option>
+                        </optgroup>
+                        <optgroup label="Gas-Shielded Flux-Cored (FCAW-G)" class="bg-zinc-900 text-zinc-400">
+                            <option value="1.2mm E71T-1M">1.2mm E71T-1M Cored Slag Wire</option>
+                            <option value="1.6mm E71T-1M">1.6mm E71T-1M Cored Slag Wire</option>
+                        </optgroup>
+                        <optgroup label="Gasless Flux-Cored (FCAW-S)" class="bg-zinc-900 text-zinc-400">
+                            <option value="1.6mm E71T-8">1.6mm E71T-8 Gasless Wire</option>
+                            <option value="2.0mm E71T-8">2.0mm E71T-8 Gasless Wire</option>
+                        </optgroup>
+                    </select>
                 </div>
                 <div>
                     <label id="label-joint" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Joint Type</label>
-                    <select id="select-joint" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
-                        </select>
+                    <select id="select-joint" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                        <option value="T-Fillet">T-Fillet Joint</option>
+                        <option value="Butt Weld">Butt Weld (V-Groove)</option>
+                        <option value="Open Corner">Open Corner Joint</option>
+                        <option value="Lap Joint">Lap Joint</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Machine Profile</label>
-                    <select id="select-machine" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
-                        </select>
+                    <select id="select-machine" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                        <option value="Generic Standard CV Box">Standard Plant Set</option>
+                        <optgroup label="ESAB Welder Line" class="bg-zinc-900 text-zinc-400">
+                            <option value="ESAB Warrior">ESAB Warrior (400i/500i)</option>
+                            <option value="ESAB Fabricator">ESAB Fabricator EM (401i/501i)</option>
+                            <option value="ESAB Rebel">ESAB Rebel (235ic/320ic)</option>
+                            <option value="ESAB Aristo">ESAB Aristo Mig (400i/500i)</option>
+                        </optgroup>
+                        <optgroup label="Miller Welder Line" class="bg-zinc-900 text-zinc-400">
+                            <option value="Miller XMT">Miller XMT Set (350/450 Inverter)</option>
+                            <option value="Miller Delta-Weld">Miller Delta-Weld Workshop Unit</option>
+                            <option value="Miller Invision">Miller Invision (352/452 MPa)</option>
+                            <option value="Miller Dimension">Miller Dimension 650 Station</option>
+                        </optgroup>
+                        <optgroup label="Lincoln Welder Line" class="bg-zinc-900 text-zinc-400">
+                            <option value="Lincoln Flextec">Lincoln Flextec Set (450/500/650)</option>
+                            <option value="Lincoln Power Wave">Lincoln Power Wave Digital Unit</option>
+                            <option value="Lincoln Idealarc">Lincoln Idealarc (DC400/DC600 Transformer)</option>
+                        </optgroup>
+                        <optgroup label="Fronius Welder Line" class="bg-zinc-900 text-zinc-400">
+                            <option value="Fronius TransSteel">Fronius TransSteel (3500/5000)</option>
+                            <option value="Fronius TPSi">Fronius TPS/i Intelligent (400i/500i)</option>
+                        </optgroup>
+                        <optgroup label="Kemppi Welder Line" class="bg-zinc-900 text-zinc-400">
+                            <option value="Kemppi FastMig">Kemppi FastMig (M/X Heavy Duty)</option>
+                            <option value="Kemppi X5">Kemppi X5 FastMig Station</option>
+                        </optgroup>
+                    </select>
                 </div>
-                <div id="weld-size-wrapper">
+                <div>
                     <label id="label-profile" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Weld Size</label>
-                    <select id="select-profile" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
-                        </select>
+                    <select id="select-profile" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                        <option value="6mm Single-Pass">6mm Single-Pass Fillet</option>
+                        <option value="8mm Single-Pass">8mm Single-Pass Fillet</option>
+                        <option value="8mm Multi-Pass">8mm Multi-Pass (Root + Cap)</option>
+                        <option value="10mm Multi-Pass">10mm Multi-Pass (3-Pass Run)</option>
+                        <option value="12mm Multi-Pass">12mm Multi-Pass (Multi-Layer Matrix)</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -148,10 +199,10 @@
                     <span class="text-sm font-bold uppercase tracking-wider text-zinc-400">Your Settings Dashboard</span>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="minimizeResultsPanel()" class="text-sm text-theme hover:text-zinc-200 bg-zinc-950 px-4 py-2 rounded-xl border border-zinc-800 font-bold transition-all shadow-md cursor-pointer">
+                    <button onclick="minimizeResultsPanel()" class="text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800 font-semibold transition-all shadow-md">
                         Minimize 🔽
                     </button>
-                    <button onclick="handleReset()" class="text-sm text-theme hover:text-zinc-200 bg-zinc-950 px-4 py-2 rounded-xl border border-zinc-800 font-bold transition-all shadow-md cursor-pointer">
+                    <button onclick="handleReset()" class="text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800 font-semibold transition-all shadow-md">
                         New Setup
                     </button>
                 </div>
@@ -168,15 +219,9 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-6 text-lg leading-relaxed text-zinc-300" id="results-container">
-            
             <div id="shop-alert-banner" class="hidden p-4 rounded-xl text-base mb-4 border">
                 <span id="shop-alert-title" class="font-bold block uppercase tracking-wide text-xs mb-1"></span>
                 <span id="shop-alert-text"></span>
-            </div>
-
-            <div id="rod-validation-banner" class="hidden bg-amber-500/10 border border-amber-500/30 text-amber-200 p-4 rounded-xl text-base mb-4 animate-fadeIn">
-                <span class="font-bold block uppercase tracking-wide text-xs text-amber-400 mb-1">⚠️ Core Compliance Warning:</span>
-                <span id="rod-validation-text"></span>
             </div>
 
             <div id="note-banner-section" class="hidden bg-amber-500/10 border border-amber-500/20 text-amber-200 p-4 rounded-xl text-base mb-4">
@@ -198,7 +243,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-inner flex flex-col justify-between">
                         <div>
-                            <span id="label-primary-display" class="text-sm text-zinc-500 uppercase block font-medium">Wire Voltage</span>
+                            <span class="text-sm text-zinc-500 uppercase block font-medium">Wire Voltage</span>
                             <span class="text-3xl font-black text-theme" id="display-volt">0.0 V</span>
                         </div>
                         <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden mt-3">
@@ -207,7 +252,7 @@
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-inner flex flex-col justify-between">
                         <div>
-                            <span id="label-secondary-display" class="text-sm text-zinc-500 uppercase block font-medium">Wire Feed Speed</span>
+                            <span class="text-sm text-zinc-500 uppercase block font-medium">Wire Feed Speed</span>
                             <span class="text-3xl font-black text-theme" id="display-wfs">0.0 m/min</span>
                         </div>
                         <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden mt-3">
@@ -228,21 +273,21 @@
 
                 <div id="multi-pass-section" class="hidden bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
                     <h3 class="text-base font-bold uppercase tracking-wider text-theme">Pass Stacking Guide</h3>
-                    <div class="grid grid-cols-1 gap-2.5 text-sm font-mono">
-                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850">
-                            <span class="text-xs text-theme block font-bold uppercase">Pass 1: Base Root Profile Sequence</span>
-                            <span id="mp-pass1" class="text-zinc-100 block mt-1 font-black text-base">--</span>
-                            <span id="mp-pass1-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span>
+                    <div class="grid grid-cols-3 gap-2 text-sm font-mono">
+                        <div class="bg-zinc-900 p-2.5 rounded-lg border border-zinc-800/80">
+                            <span class="text-xs text-zinc-500 block font-bold uppercase">Pass 1: Root</span>
+                            <span id="mp-pass1" class="text-zinc-200 block mt-1 font-bold">--</span>
+                            <span class="text-xs text-zinc-500 block mt-0.5">Deep penetration run. Keep it straight.</span>
                         </div>
-                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850">
-                            <span class="text-xs text-theme block font-bold uppercase">Pass 2: Intermediate Fill Matrix Sequence</span>
-                            <span id="mp-pass2" class="text-zinc-100 block mt-1 font-black text-base">--</span>
-                            <span id="mp-pass2-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span>
+                        <div class="bg-zinc-900 p-2.5 rounded-lg border border-zinc-800/80">
+                            <span class="text-xs text-zinc-500 block font-bold uppercase">Pass 2: Fills</span>
+                            <span id="mp-pass2" class="text-zinc-200 block mt-1 font-bold">--</span>
+                            <span class="text-xs text-zinc-500 block mt-0.5">Max metal deposition. Watch sidewalls.</span>
                         </div>
-                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850">
-                            <span class="text-xs text-theme block font-bold uppercase">Pass 3: Final Surface Crown Cap Sequence</span>
-                            <span id="mp-pass3" class="text-zinc-100 block mt-1 font-black text-base">--</span>
-                            <span id="mp-pass3-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span>
+                        <div class="bg-zinc-900 p-2.5 rounded-lg border border-zinc-800/80">
+                            <span class="text-xs text-zinc-500 block font-bold uppercase">Pass 3: Cap Pass</span>
+                            <span id="mp-pass3" class="text-zinc-200 block mt-1 font-bold">--</span>
+                            <span class="text-xs text-zinc-500 block mt-0.5">Zero undercut target. Smooth stringers.</span>
                         </div>
                     </div>
                 </div>
@@ -254,26 +299,84 @@
                         <div id="preheat-notice-zone"></div>
                     </ul>
                 </div>
+
+                <div class="bg-zinc-950 p-5 rounded-xl border border-zinc-800/80 space-y-4 shadow-xl">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50">
+                        <div>
+                            <h4 class="text-base font-bold uppercase tracking-wider text-zinc-200">Real-Time Heat Input</h4>
+                            <p class="text-xs text-zinc-500 font-mono mt-0.5">Monitors target heat thresholds dynamically</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="toggleNoviceGuide()" class="text-xs bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme px-3 py-1.5 rounded-lg transition-colors font-medium flex items-center gap-1.5">
+                                <span id="novice-toggle-text">Show Guide</span>
+                                <span id="novice-arrow" class="inline-block transition-transform duration-200" style="transform: rotate(0deg);">▼</span>
+                            </button>
+                            <span id="hi-result" class="text-3xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight transition-all duration-300">0.00 kJ/mm</span>
+                        </div>
+                    </div>
+
+                    <div id="novice-guide-drawer" class="hidden bg-zinc-900/60 p-4 rounded-lg border border-zinc-800/60 text-sm text-zinc-400 space-y-3.5">
+                        <p><strong class="text-zinc-200">💡 Why this matters:</strong> Heat input determines thermal loading. Moving too slow overheats structural joints (turns <span class="text-rose-400 font-bold">Red</span>), risking warping or crystal yield cracking. Running too fast leaves the weld freezing cold with zero penetration (turns <span class="text-amber-400 font-bold">Yellow</span>).</p>
+                        <div class="bg-zinc-950 border border-zinc-800 p-4 rounded-xl mt-2 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div class="w-full md:w-3/5 space-y-2.5">
+                                <span class="block text-xs uppercase font-bold text-theme tracking-wide">Travel Speed Calculator (Distance ÷ Seconds)</span>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[10px] uppercase font-bold text-zinc-500 mb-0.5">Distance (mm)</label>
+                                        <input id="calc-distance" type="number" placeholder="e.g. 150" oninput="runNoviceCalculator()" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-xs rounded p-1.5 focus:outline-none focus:border-zinc-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] uppercase font-bold text-zinc-500 mb-0.5">Time (Seconds)</label>
+                                        <input id="calc-seconds" type="number" placeholder="e.g. 30" oninput="runNoviceCalculator()" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-xs rounded p-1.5 focus:outline-none focus:border-zinc-700">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-2/5 flex flex-col items-center md:items-end justify-center pt-3 md:pt-0 md:pl-4 border-t md:border-t-0 md:border-l border-zinc-900/80">
+                                <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Calculated Speed</span>
+                                <span id="calc-speed-result" class="text-2xl md:text-3xl font-mono font-black text-emerald-400 tracking-tighter transition-all duration-300">0 mm/min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 pt-2">
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-zinc-500 mb-0.5">Volts</label>
+                            <input id="hi-volt" type="number" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-zinc-500 mb-0.5">Amps (Est.)</label>
+                            <input id="hi-amp" type="number" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-zinc-500 mb-0.5">Speed (mm/min)</label>
+                            <input id="hi-ts" type="number" placeholder="e.g. 250" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
+                        </div>
+                    </div>
+
+                    <button onclick="calculateRealtimeHeatInput(true)" class="w-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 hover:text-white font-bold py-2.5 rounded-xl transition-all uppercase tracking-wide text-xs flex items-center justify-center gap-2">
+                        <span>📥 Log Pass to Run History</span>
+                    </button>
+
+                    <div class="border-t border-zinc-900/80 pt-3 space-y-1.5">
+                        <span class="block text-[10px] uppercase font-bold text-zinc-500 tracking-wide">Saved Runs History Log</span>
+                        <div id="history-log-stack" class="space-y-1 bg-zinc-950 p-3 rounded-lg border border-zinc-900/60 max-h-28 overflow-y-auto"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="panel-tech" class="hidden space-y-6">
-                <div id="smart-rod-advice-box" class="hidden bg-gradient-to-r from-blue-950/20 to-zinc-950 border border-blue-500/20 p-4 rounded-xl text-base mb-2">
-                    <span class="font-bold block uppercase tracking-wide text-xs text-blue-400 mb-1">📋 Core Rod Selection Blueprint:</span>
-                    <p id="smart-rod-advice-text" class="text-zinc-300 text-sm leading-relaxed"></p>
-                </div>
-
                 <h2 class="text-2xl font-bold text-zinc-100">Weld Coach Tips <span class="text-sm font-mono text-purple-400 font-normal">[AI Guided]</span></h2>
                 <div class="space-y-4">
                     <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
-                        <h4 id="coach-title-primary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Bead Manipulation (Stringer vs Weave)</h4>
+                        <h4 class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Bead Manipulation (Stringer vs Weave)</h4>
                         <p id="coach-bead-text" class="text-zinc-400 text-base"></p>
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
-                        <h4 id="coach-title-secondary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Joint Angle & Direction Strategy</h4>
+                        <h4 class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Joint Angle & Direction Strategy</h4>
                         <p id="coach-angle-text" class="text-zinc-400 text-base"></p>
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
-                        <h4 id="coach-title-tertiary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Arc Clearance Controls</h4>
+                        <h4 class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Torch Stick-Out (Distance from tip to work)</h4>
                         <p id="coach-stickout-text" class="text-zinc-400 text-base"></p>
                     </div>
                 </div>
@@ -293,8 +396,11 @@
                 </div>
 
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-1.5 focus-within:border-zinc-700 focus-within:ring-1 focus-within:ring-zinc-700 transition-all flex gap-3 items-center mt-4">
-                    <input id="follow-up-input" type="text" placeholder="Ask Weld Coach to adjust settings (e.g., 'Correcting undercut...')" class="flex-1 bg-transparent border-0 rounded-lg py-2 px-3 text-base text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-0">
-                    <button onclick="sendFollowUp()" class="bg-zinc-800 hover:bg-theme hover:text-zinc-950 text-zinc-200 px-4 py-2 rounded-lg font-semibold text-sm uppercase tracking-wider transition-all shadow-md shrink-0">Ask Coach</button>
+                    <input id="follow-up-input" type="text" placeholder="Ask Weld Coach to adjust settings (e.g., 'Correcting undercut...')" 
+                        class="flex-1 bg-transparent border-0 rounded-lg py-2 px-3 text-base text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-0">
+                    <button onclick="sendFollowUp()" class="bg-zinc-800 hover:bg-theme hover:text-zinc-950 text-zinc-200 px-4 py-2 rounded-lg font-semibold text-sm uppercase tracking-wider transition-all shadow-md shrink-0">
+                        Ask Coach
+                    </button>
                 </div>
             </div>
         </div>
@@ -306,7 +412,9 @@
                 <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                 <span class="text-base font-bold font-mono tracking-wide text-zinc-300 uppercase">Formula Engine Transparency Audit</span>
             </div>
-            <button onclick="minimizeMathPanel()" class="text-sm bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 py-2 rounded-xl font-bold transition-all shadow-md">Close Audit View 🔼</button>
+            <button onclick="minimizeMathPanel()" class="text-sm bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 py-2 rounded-xl font-bold transition-all shadow-md">
+                Close Audit View 🔼
+            </button>
         </div>
         <div class="flex-1 overflow-y-auto p-8 max-w-3xl mx-auto w-full space-y-6 leading-relaxed text-zinc-300 text-base" id="math-content-area"></div>
     </div>
