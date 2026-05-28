@@ -9,16 +9,19 @@
         .transition-all-custom {
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        
         :root {
             --theme-primary: 59 130 246; 
             --theme-primary-hover: 37 99 235; 
             --theme-glow: rgba(59, 130, 246, 0.1);
         }
+        
         .theme-orange {
             --theme-primary: 249 115 22; 
             --theme-primary-hover: 234 88 12; 
             --theme-glow: rgba(249, 115, 22, 0.1);
         }
+
         .text-theme { color: rgb(var(--theme-primary)); }
         .bg-theme { background-color: rgb(var(--theme-primary)); }
         .bg-theme-hover:hover { background-color: rgb(var(--theme-primary-hover)); }
@@ -29,147 +32,270 @@
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-center items-center overflow-hidden font-sans p-4 select-none">
+
     <div id="bg-glow" class="absolute inset-0 pointer-events-none transition-all duration-700" style="background: radial-gradient(ellipse at center, var(--theme-glow) 0%, #09090b 100%);"></div>
+
     <div class="absolute top-4 left-4 right-4 z-40 flex justify-between items-center max-w-2xl mx-auto w-full px-4 md:px-0">
         <button onclick="openMathDashboard()" class="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-xl transition-all cursor-pointer group active:scale-95">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span class="text-sm font-mono text-zinc-400 group-hover:text-zinc-200 uppercase tracking-wider transition-colors">Engine: WeldBuddy Core v2.9 🔍</span>
         </button>
     </div>
+
     <div id="app-container" class="w-full max-w-2xl relative z-10 flex flex-col items-center transition-all-custom mt-12">
         <div id="branding" class="text-center mb-6 transition-all-custom">
-            <h1 id="brand-title" class="text-5xl font-black tracking-wider text-theme uppercase transition-all duration-500">Weld Buddy</h1>
+            <h1 id="brand-title" class="text-5xl font-black tracking-wider text-theme uppercase transition-all duration-500">
+                Weld Buddy
+            </h1>
             <p class="text-zinc-400 text-lg mt-2">Calculated Machine Settings & Setup Advice</p>
         </div>
+
         <div id="search-box" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl transition-all-custom">
+            
             <div class="grid grid-cols-2 gap-2 bg-zinc-950 p-1 rounded-xl border border-zinc-850 mb-4">
-                <button id="proc-btn-gmaw" onclick="switchProcess('gmaw')" class="py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all bg-theme text-zinc-950 cursor-pointer">MIG / Flux-Core</button>
-                <button id="proc-btn-smaw" onclick="switchProcess('smaw')" class="py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">Stick Welding</button>
-            </div>
-            <label class="block text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Select Your Welding Setup</label>
-            <p class="text-sm text-zinc-400 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 mb-4">⚙️ <span class="text-zinc-200 font-semibold">Calculator Active:</span> Dials are calculated using standard formulas.</p>
-            <div class="space-y-4">
-                <textarea id="user-input" rows="3" class="w-full bg-zinc-950 text-zinc-100 placeholder-zinc-600 border border-zinc-800 rounded-xl py-3 px-4 focus:outline-none focus:ring-1 focus-theme resize-none transition-all text-lg" placeholder="Type any custom booth notes here..."></textarea>
-                <button id="submit-btn" onclick="handleSubmit()" class="w-full bg-theme bg-theme-hover text-zinc-950 font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 uppercase tracking-wider text-base cursor-pointer">
-                    <span>Get Machine Settings</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" /></svg>
+                <button id="proc-btn-gmaw" onclick="switchProcess('gmaw')" class="py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all bg-theme text-zinc-950 cursor-pointer">
+                    MIG / Flux-Core
+                </button>
+                <button id="proc-btn-smaw" onclick="switchProcess('smaw')" class="py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">
+                    Stick Welding
                 </button>
             </div>
+
+            <label class="block text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Select Your Welding Setup</label>
+            <p class="text-sm text-zinc-400 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 mb-4">
+                ⚙️ <span class="text-zinc-200 font-semibold">Calculator Active:</span> Dials are calculated using standard formulas. AI coaching is only active under the Weld Coach tab.
+            </p>
+
+            <div class="space-y-4">
+                <textarea id="user-input" rows="3" 
+                    class="w-full bg-zinc-950 text-zinc-100 placeholder-zinc-600 border border-zinc-800 rounded-xl py-3 px-4 focus:outline-none focus:ring-1 focus-theme resize-none transition-all text-lg"
+                    placeholder="Type any custom booth notes here (e.g., tight grating gaps, awkward angle restrictions)..."></textarea>
+                
+                <button id="submit-btn" onclick="handleSubmit()" 
+                    class="w-full bg-theme bg-theme-hover text-zinc-950 font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 uppercase tracking-wider text-base cursor-pointer">
+                    <span>Get Machine Settings</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                    </svg>
+                </button>
+            </div>
+
             <div class="grid grid-cols-3 gap-3 text-sm border-t border-zinc-800/60 pt-4 mt-4">
                 <div>
                     <label id="label-thickness" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Thickness</label>
                     <select id="select-thickness" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
-                        <option value="6mm">6mm Material</option><option value="8mm">8mm Material</option><option value="10mm">10mm Material</option><option value="12mm">12mm Plate</option><option value="15mm">15mm Plate</option><option value="20mm">20mm Plate</option><option value="25mm+">25mm+ (Preheat Required)</option>
+                        <option value="6mm">6mm Material</option>
+                        <option value="8mm">8mm Material</option>
+                        <option value="10mm">10mm Material</option>
+                        <option value="12mm">12mm Plate</option>
+                        <option value="15mm">15mm Plate</option>
+                        <option value="20mm">20mm Plate</option>
+                        <option value="25mm+">25mm+ (Preheat Required)</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Position</label>
                     <select id="select-position" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
-                        <option value="1G">1G (Flat)</option><option value="2G">2G (Horizontal)</option><option value="3G">3G (Vertical Up)</option><option value="4G">4G (Overhead)</option><option value="6G">6G (45° Fixed Pipe)</option>
+                        <option value="1G">1G (Flat)</option>
+                        <option value="2G">2G (Horizontal)</option>
+                        <option value="3G">3G (Vertical Up)</option>
+                        <option value="4G">4G (Overhead)</option>
+                        <option value="6G">6G (45° Fixed Pipe)</option>
                     </select>
                 </div>
                 <div>
                     <label id="label-consumable" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Wire Type</label>
-                    <select id="select-wire" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer"></select>
+                    <select id="select-wire" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                        </select>
                 </div>
                 <div>
                     <label id="label-joint" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Joint Type</label>
-                    <select id="select-joint" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer"></select>
+                    <select id="select-joint" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                        </select>
                 </div>
                 <div>
                     <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Machine Profile</label>
-                    <select id="select-machine" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer"></select>
+                    <select id="select-machine" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                        </select>
                 </div>
                 <div id="weld-size-wrapper">
                     <label id="label-profile" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Weld Size</label>
-                    <select id="select-profile" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer"></select>
+                    <select id="select-profile" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                        </select>
                 </div>
             </div>
         </div>
     </div>
-        <div id="results-panel" class="fixed inset-0 h-screen bg-zinc-900 border-t border-zinc-800 rounded-t-3xl shadow-2xl z-50 translate-y-full transition-all-custom flex flex-col">
+
+    <div id="results-panel" class="fixed inset-0 h-screen bg-zinc-900 border-t border-zinc-800 rounded-t-3xl shadow-2xl z-50 translate-y-full transition-all-custom flex flex-col">
+        
         <div id="panel-header" class="px-6 bg-zinc-900/90 border-b border-zinc-800 sticky top-0">
             <div class="w-16 h-1.5 bg-zinc-700 rounded-full mx-auto my-2.5"></div>
+            
             <div class="flex items-center justify-between pb-3">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span class="text-sm font-bold uppercase tracking-wider text-zinc-400">Your Settings Dashboard</span>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="minimizeResultsPanel()" class="text-sm text-theme hover:text-zinc-200 bg-zinc-950 px-4 py-2 rounded-xl border border-zinc-800 font-bold transition-all shadow-md cursor-pointer">Minimize 🔽</button>
-                    <button onclick="handleReset()" class="text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-950 px-4 py-2 rounded-xl border border-zinc-800 font-bold transition-all shadow-md cursor-pointer">New Setup</button>
+                    <button onclick="minimizeResultsPanel()" class="text-sm text-theme hover:text-zinc-200 bg-zinc-950 px-4 py-2 rounded-xl border border-zinc-800 font-bold transition-all shadow-md cursor-pointer">
+                        Minimize 🔽
+                    </button>
+                    <button onclick="handleReset()" class="text-sm text-theme hover:text-zinc-200 bg-zinc-950 px-4 py-2 rounded-xl border border-zinc-800 font-bold transition-all shadow-md cursor-pointer">
+                        New Setup
+                    </button>
                 </div>
             </div>
+            
             <div class="flex gap-6 text-lg font-medium pb-px">
-                <button id="tab-specs-btn" onclick="switchTab('specs')" class="border-b-2 border-theme text-zinc-100 pb-3 transition-all">Machine Dials ⚙️</button>
-                <button id="tab-tech-btn" onclick="switchTab('tech')" class="border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 pb-3 transition-all">Weld Coach 🥊</button>
+                <button id="tab-specs-btn" onclick="switchTab('specs')" class="border-b-2 border-theme text-zinc-100 pb-3 transition-all">
+                    Machine Dials ⚙️
+                </button>
+                <button id="tab-tech-btn" onclick="switchTab('tech')" class="border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 pb-3 transition-all">
+                    Weld Coach 🥊
+                </button>
             </div>
         </div>
+
         <div class="flex-1 overflow-y-auto p-6 text-lg leading-relaxed text-zinc-300" id="results-container">
-            <div id="shop-alert-banner" class="hidden p-4 rounded-xl text-base mb-4 border"><span id="shop-alert-title" class="font-bold block uppercase tracking-wide text-xs mb-1"></span><span id="shop-alert-text"></span></div>
-            <div id="rod-validation-banner" class="hidden bg-amber-500/10 border border-amber-500/30 text-amber-200 p-4 rounded-xl text-base mb-4 animate-fadeIn"><span class="font-bold block uppercase tracking-wide text-xs text-amber-400 mb-1">⚠️ Core Compliance Warning:</span><span id="rod-validation-text"></span></div>
-            <div id="note-banner-section" class="hidden bg-amber-500/10 border border-amber-500/20 text-amber-200 p-4 rounded-xl text-base mb-4"><span class="font-bold block uppercase tracking-wide text-xs text-amber-400 mb-1">📝 Custom Booth Note Active:</span><span id="note-banner-text"></span></div>
+            
+            <div id="shop-alert-banner" class="hidden p-4 rounded-xl text-base mb-4 border">
+                <span id="shop-alert-title" class="font-bold block uppercase tracking-wide text-xs mb-1"></span>
+                <span id="shop-alert-text"></span>
+            </div>
+
+            <div id="rod-validation-banner" class="hidden bg-amber-500/10 border border-amber-500/30 text-amber-200 p-4 rounded-xl text-base mb-4">
+                <span class="font-bold block uppercase tracking-wide text-xs text-amber-400 mb-1">⚠️ Core Compliance Warning:</span>
+                <span id="rod-validation-text"></span>
+            </div>
+
+            <div id="note-banner-section" class="hidden bg-amber-500/10 border border-amber-500/20 text-amber-200 p-4 rounded-xl text-base mb-4">
+                <span class="font-bold block uppercase tracking-wide text-xs text-amber-400 mb-1">📝 Custom Booth Note Active:</span>
+                <span id="note-banner-text"></span>
+            </div>
+
             <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex justify-between items-center mb-6">
-                <div><h3 class="text-zinc-400 font-bold text-sm uppercase tracking-wider mb-1">Target Requirements Base</h3><p id="target-requirements-display" class="text-zinc-500 text-sm font-mono"></p></div>
+                <div>
+                    <h3 class="text-zinc-400 font-bold text-sm uppercase tracking-wider mb-1">Target Requirements Base</h3>
+                    <p id="target-requirements-display" class="text-zinc-500 text-sm font-mono"></p>
+                </div>
                 <span class="text-xs bg-zinc-900 border border-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-mono uppercase tracking-tight shrink-0 select-none">✓ Verified Calculations</span>
             </div>
+
             <div id="panel-specs" class="space-y-6">
                 <h2 class="text-2xl font-bold text-zinc-100">Recommended Machine Dials</h2>
+                
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-inner flex flex-col justify-between">
-                        <div><span id="label-primary-display" class="text-sm text-zinc-500 uppercase block font-medium">Wire Voltage</span><span class="text-3xl font-black text-theme" id="display-volt">0.0 V</span></div>
-                        <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden mt-3"><div id="bar-volt" class="bg-theme h-full transition-all duration-500" style="width: 0%"></div></div>
+                        <div>
+                            <span id="label-primary-display" class="text-sm text-zinc-500 uppercase block font-medium">Wire Voltage</span>
+                            <span class="text-3xl font-black text-theme" id="display-volt">0.0 V</span>
+                        </div>
+                        <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden mt-3">
+                            <div id="bar-volt" class="bg-theme h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-inner flex flex-col justify-between">
-                        <div><span id="label-secondary-display" class="text-sm text-zinc-500 uppercase block font-medium">Wire Feed Speed</span><span class="text-3xl font-black text-theme" id="display-wfs">0.0 m/min</span></div>
-                        <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden mt-3"><div id="bar-wfs" class="bg-theme h-full transition-all duration-500" style="width: 0%"></div></div>
+                        <div>
+                            <span id="label-secondary-display" class="text-sm text-zinc-500 uppercase block font-medium">Wire Feed Speed</span>
+                            <span class="text-3xl font-black text-theme" id="display-wfs">0.0 m/min</span>
+                        </div>
+                        <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden mt-3">
+                            <div id="bar-wfs" class="bg-theme h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
                     </div>
                 </div>
+
                 <div id="inductance-section" class="hidden bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
-                    <div><span id="inductance-label" class="text-sm text-zinc-500 uppercase block font-medium">Inductance Target Setting</span><span id="inductance-value" class="text-2xl font-black text-purple-400 font-mono">50%</span></div>
-                    <div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden mt-3"><div id="bar-inductance" class="bg-purple-500 h-full transition-all duration-500" style="width: 50%"></div></div>
+                    <div>
+                        <span id="inductance-label" class="text-sm text-zinc-500 uppercase block font-medium">Inductance Target Setting</span>
+                        <span id="inductance-value" class="text-2xl font-black text-purple-400 font-mono">50%</span>
+                    </div>
+                    <div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden mt-3">
+                        <div id="bar-inductance" class="bg-purple-500 h-full transition-all duration-500" style="width: 50%"></div>
+                    </div>
                 </div>
+
                 <div id="multi-pass-section" class="hidden bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
                     <h3 class="text-base font-bold uppercase tracking-wider text-theme">Pass Stacking Guide</h3>
                     <div class="grid grid-cols-1 gap-2.5 text-sm font-mono">
-                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850"><span class="text-xs text-theme block font-bold uppercase">Pass 1: Root Layer Sequence</span><span id="mp-pass1" class="text-zinc-100 block mt-1 font-black text-base">--</span><span id="mp-pass1-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span></div>
-                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850"><span class="text-xs text-theme block font-bold uppercase">Pass 2: Filling Matrix Sequence</span><span id="mp-pass2" class="text-zinc-100 block mt-1 font-black text-base">--</span><span id="mp-pass2-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span></div>
-                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850"><span class="text-xs text-theme block font-bold uppercase">Pass 3: Surface Cap Sequence</span><span id="mp-pass3" class="text-zinc-100 block mt-1 font-black text-base">--</span><span id="mp-pass3-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span></div>
+                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850">
+                            <span class="text-xs text-theme block font-bold uppercase">Pass 1: Base Root Profile Sequence</span>
+                            <span id="mp-pass1" class="text-zinc-100 block mt-1 font-black text-base">--</span>
+                            <span id="mp-pass1-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span>
+                        </div>
+                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850">
+                            <span class="text-xs text-theme block font-bold uppercase">Pass 2: Intermediate Fill Matrix Sequence</span>
+                            <span id="mp-pass2" class="text-zinc-100 block mt-1 font-black text-base">--</span>
+                            <span id="mp-pass2-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span>
+                        </div>
+                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-850">
+                            <span class="text-xs text-theme block font-bold uppercase">Pass 3: Final Surface Crown Cap Sequence</span>
+                            <span id="mp-pass3" class="text-zinc-100 block mt-1 font-black text-base">--</span>
+                            <span id="mp-pass3-advice" class="text-xs text-zinc-400 block mt-1 leading-normal">--</span>
+                        </div>
                     </div>
                 </div>
+
                 <div class="border-t border-zinc-800 pt-4">
                     <h3 class="text-xl font-semibold text-zinc-200 mb-2">Essential Constants</h3>
-                    <ul class="list-disc list-inside space-y-2 text-zinc-400 text-base"><li id="item-gas-constant">Shielding Gas: <span id="display-gas" class="font-bold text-zinc-300">--</span></li><div id="preheat-notice-zone"></div></ul>
+                    <ul class="list-disc list-inside space-y-2 text-zinc-400 text-base">
+                        <li>Shielding Gas: <span id="display-gas" class="font-bold text-zinc-300">--</span></li>
+                        <div id="preheat-notice-zone"></div>
+                    </ul>
                 </div>
             </div>
+
             <div id="panel-tech" class="hidden space-y-6">
-                <div id="smart-rod-advice-box" class="hidden bg-gradient-to-r from-blue-950/20 to-zinc-950 border border-blue-500/20 p-4 rounded-xl text-base mb-2"><span class="font-bold block uppercase tracking-wide text-xs text-blue-400 mb-1">📋 Core Rod Selection Blueprint:</span><p id="smart-rod-advice-text" class="text-zinc-300 text-sm leading-relaxed"></p></div>
                 <h2 class="text-2xl font-bold text-zinc-100">Weld Coach Tips <span class="text-sm font-mono text-purple-400 font-normal">[AI Guided]</span></h2>
                 <div class="space-y-4">
-                    <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30"><h4 id="coach-title-primary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Bead Manipulation (Stringer vs Weave)</h4><p id="coach-bead-text" class="text-zinc-400 text-base"></p></div>
-                    <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30"><h4 id="coach-title-secondary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Joint Angle & Direction Strategy</h4><p id="coach-angle-text" class="text-zinc-400 text-base"></p></div>
-                    <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30"><h4 id="coach-title-tertiary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Arc Clearance Controls</h4><p id="coach-stickout-text" class="text-zinc-400 text-base"></p></div>
+                    <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
+                        <h4 id="coach-title-primary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Bead Manipulation (Stringer vs Weave)</h4>
+                        <p id="coach-bead-text" class="text-zinc-400 text-base"></p>
+                    </div>
+                    <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
+                        <h4 id="coach-title-secondary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Joint Angle & Direction Strategy</h4>
+                        <p id="coach-angle-text" class="text-zinc-400 text-base"></p>
+                    </div>
+                    <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
+                        <h4 id="coach-title-tertiary" class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Arc Clearance Controls</h4>
+                        <p id="coach-stickout-text" class="text-zinc-400 text-base"></p>
+                    </div>
                 </div>
+                
                 <div id="chat-thread" class="space-y-4 mt-6 pt-6 border-t border-zinc-800"></div>
+
                 <div class="space-y-2 mt-4">
-                    <div class="flex justify-between items-center"><label class="block text-xs uppercase font-bold text-zinc-500 tracking-wider">Quick Fixes</label><span class="text-xs bg-purple-950/40 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded font-mono font-bold">Fix Defect</span></div>
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs uppercase font-bold text-zinc-500 tracking-wider">Quick Fixes</label>
+                        <span class="text-xs bg-purple-950/40 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded font-mono font-bold">Fix Defect</span>
+                    </div>
                     <div class="grid grid-cols-3 gap-2 text-center text-sm font-bold">
                         <button onclick="triggerQuickTroubleshoot('undercut')" class="bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme p-2 rounded-xl transition-all">⚠️ Undercut</button>
                         <button onclick="triggerQuickTroubleshoot('lack of fusion')" class="bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme p-2 rounded-xl transition-all">🛑 Lack of Fusion</button>
                         <button onclick="triggerQuickTroubleshoot('porosity')" class="bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme p-2 rounded-xl transition-all">💨 Porosity</button>
                     </div>
                 </div>
+
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-1.5 focus-within:border-zinc-700 focus-within:ring-1 focus-within:ring-zinc-700 transition-all flex gap-3 items-center mt-4">
-                    <input id="follow-up-input" type="text" placeholder="Ask Weld Coach to adjust settings..." class="flex-1 bg-transparent border-0 rounded-lg py-2 px-3 text-base text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-0">
+                    <input id="follow-up-input" type="text" placeholder="Ask Weld Coach to adjust settings (e.g., 'Correcting undercut...')" class="flex-1 bg-transparent border-0 rounded-lg py-2 px-3 text-base text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-0">
                     <button onclick="sendFollowUp()" class="bg-zinc-800 hover:bg-theme hover:text-zinc-950 text-zinc-200 px-4 py-2 rounded-lg font-semibold text-sm uppercase tracking-wider transition-all shadow-md shrink-0">Ask Coach</button>
                 </div>
             </div>
         </div>
     </div>
+
     <div id="math-panel" class="fixed inset-0 h-screen bg-zinc-950 border-t border-zinc-900 shadow-2xl z-50 translate-y-full transition-all-custom flex flex-col select-text">
-        <div class="px-6 py-4 bg-zinc-900 border-b border-zinc-800 flex justify-between items-center sticky top-0"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span><span class="text-base font-bold font-mono tracking-wide text-zinc-300 uppercase">Formula Engine Transparency Audit</span></div><button onclick="minimizeMathPanel()" class="text-sm bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 py-2 rounded-xl font-bold transition-all shadow-md">Close Audit View 🔼</button></div>
+        <div class="px-6 py-4 bg-zinc-900 border-b border-zinc-800 flex justify-between items-center sticky top-0">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span class="text-base font-bold font-mono tracking-wide text-zinc-300 uppercase">Formula Engine Transparency Audit</span>
+            </div>
+            <button onclick="minimizeMathPanel()" class="text-sm bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 py-2 rounded-xl font-bold transition-all shadow-md">Close Audit View 🔼</button>
+        </div>
         <div class="flex-1 overflow-y-auto p-8 max-w-3xl mx-auto w-full space-y-6 leading-relaxed text-zinc-300 text-base" id="math-content-area"></div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
