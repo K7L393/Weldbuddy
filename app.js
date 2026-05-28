@@ -664,7 +664,10 @@ function sendFollowUp() {
 
     fetch(BACKEND_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Bypass-Tunnel-Reminder": "true" // This clears the security gate automatically
+        },
         body: JSON.stringify(payload)
     })
     .then(response => {
