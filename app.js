@@ -666,7 +666,7 @@ function sendFollowUp() {
         method: "POST",
         headers: { 
             "Content-Type": "application/json",
-            "Bypass-Tunnel-Reminder": "true" // This clears the security gate automatically
+            // The Localtunnel bypass line has been completely removed from here!
         },
         body: JSON.stringify(payload)
     })
