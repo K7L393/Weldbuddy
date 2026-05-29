@@ -30,7 +30,12 @@ const WeldingProcessRegistry = {
             if (s.thickness === "20mm") thicknessValue = 20;
             if (s.thickness === "25mm+") thicknessValue = 28;
 
-            let targetAmperage = thicknessValue * 22; 
+            // ========================================================
+            // ADAPTIVE PROGRESSIVE AMPERAGE SCALING CURVE
+            // ========================================================
+            let targetAmperage = 120 + (thicknessValue * 9); 
+            if (wireDiameter === 1.2) targetAmperage = 140 + (thicknessValue * 11);
+            if (wireDiameter >= 1.6) targetAmperage = 160 + (thicknessValue * 13);
             
             const isOutOfPosition = s.position === "3G" || s.position === "4G" || s.position === "6G";
             if (s.position === "3G") targetAmperage *= 0.75; 
@@ -40,29 +45,23 @@ const WeldingProcessRegistry = {
             let minAmp = 130;
             let maxAmp = 330;
             
-            // ========================================================
-            // EXPANDED CODE-COMPLIANT MANUFACTURER SPEC LIMITS MATRIX
-            // ========================================================
             if (s.wire && s.wire.includes("ER70S-6")) {
-                // SOLID WIRE SPECIFICATION WINDOWS
                 if (isOutOfPosition) {
                     minAmp = wireDiameter === 1.0 ? 85 : 105;
                     maxAmp = wireDiameter === 1.0 ? 135 : 155; 
                 } else {
                     minAmp = wireDiameter === 1.0 ? 150 : 180;
-                    maxAmp = wireDiameter === 1.0 ? 260 : 320; // Unlocks full 28V (1.0mm) and 31V (1.2mm) Spray Windows
+                    maxAmp = wireDiameter === 1.0 ? 260 : 320; 
                 }
             } else if (s.wire && s.wire.includes("E71T-1M")) {
-                // GAS-SHIELDED DUAL-SHIELD FLUX-CORED WINDOWS
                 if (isOutOfPosition) {
                     minAmp = wireDiameter === 1.2 ? 130 : 160;
-                    maxAmp = wireDiameter === 1.2 ? 210 : 230; // Expanded to support high-performance vertical/overhead shelves
+                    maxAmp = wireDiameter === 1.2 ? 210 : 230; 
                 } else {
                     minAmp = wireDiameter === 1.2 ? 130 : 160;
-                    maxAmp = wireDiameter === 1.2 ? 300 : 360; // Unlocks heavy-duty downhand production thresholds
+                    maxAmp = wireDiameter === 1.2 ? 300 : 360; 
                 }
             } else if (s.wire && s.wire.includes("E71T-8")) {
-                // SELF-SHIELDED MECHANICAL GASLESS CORED WINDOWS
                 if (isOutOfPosition) {
                     minAmp = wireDiameter === 1.6 ? 140 : 170;
                     maxAmp = wireDiameter === 1.6 ? 215 : 240; 
@@ -134,24 +133,22 @@ const WeldingProcessRegistry = {
             return `
                 <div class="space-y-6">
                     <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-                        <h3 class="text-xl font-bold text-theme mb-2">1. Target Amps (Heat Control)</h3>
-                        <p class="text-zinc-400 mb-4">The calculator sets your baseline amps based on how thick your metal is. Thicker steel needs more juice to fuse properly. It automatically drops the amps if you are welding vertically or overhead so the puddle doesn't run out of the joint.</p>
+                        <h3 class="text-xl font-bold text-theme mb-2">1. Target Amps (Dynamic Curve Engine)</h3>
+                        <p class="text-zinc-400 mb-4">The calculator sets your baseline amps using a progressive mass scaling curve matched directly to your wire diameter. This keeps mid-range plate sizes safely centered within the wire's clean transfer spectrum without flatlining early.</p>
                         <div class="bg-zinc-950 p-4 rounded-lg font-mono text-sm space-y-2 border border-zinc-900">
                             <div>• Metal Thickness: <span class="text-zinc-100">${baseThicknessVal}mm</span></div>
-                            <div>• Position Multiplier: <span class="text-zinc-100">${positionCoeff}x (${s.position})</span></div>
-                            <div class="border-t border-zinc-800 my-2 pt-2 text-theme font-bold">Formula: Base Amps = (Thickness × 22) × Position Modifier</div>
+                            <div>• Wire Base Curve: <span class="text-zinc-100">Scaled via ${specs.wireDiameter}mm Diameter Profile</span></div>
+                            <div class="border-t border-zinc-800 my-2 pt-2 text-theme font-bold">Calculated Energy Target:</div>
                             <div class="text-emerald-400 font-bold">Target Amps: ${specs.amperage} A</div>
                         </div>
                     </div>
 
                     <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
                         <h3 class="text-xl font-bold text-theme mb-2">2. Wire Size Limits (Feeder Safety Limits)</h3>
-                        <p class="text-zinc-400 mb-4">Instead of guessing like a regular AI, the app looks at the physical limits of your wire size first. For example, a 1.0mm solid wire can only handle so many amps before it burns back into your contact tip or bird-nests the feeder. The code locks in safe limits based on physics.</p>
+                        <p class="text-zinc-400 mb-4">The code locks in full structural envelopes matched to manufacturer data sheets, unlocking wide spray transitions while clamping absolute upper boundaries before the wire vaporizes.</p>
                         <div class="bg-zinc-950 p-4 rounded-lg font-mono text-sm space-y-2 border border-zinc-900">
                             <div>• Wire Type Selected: <span class="text-zinc-100">${s.wire || '1.0mm ER70S-6'}</span></div>
                             <div>• Wire Surface Area: <span class="text-zinc-100">${(Math.PI * Math.pow((specs.wireDiameter / 2), 2)).toFixed(4)} mm²</span></div>
-                            <div class="border-t border-zinc-800 my-2 pt-2 text-theme font-bold">Safe Current Ranges:</div>
-                            <div>• Allowed Amps: <span class="text-zinc-100">${s.position === "3G" || s.position === "4G" || s.position === "6G" ? '85A - 200A (Fast Freeze Range)' : '150A - 320A (Flat Spray Range)'}</span></div>
                         </div>
                     </div>
 
@@ -159,9 +156,6 @@ const WeldingProcessRegistry = {
                         <h3 class="text-xl font-bold text-theme mb-2">3. Calculating Voltage (Arc Length)</h3>
                         <p class="text-zinc-400 mb-4">Your base voltage is calculated straight from your target amps. If you choose an open root or groove joint, it drops the voltage slightly so you don't blow a hole through your root face, then fine-tunes it for your specific wire type.</p>
                         <div class="bg-zinc-950 p-4 rounded-lg font-mono text-sm space-y-2 border border-zinc-900">
-                            <div>• Voltage Calculation: <span class="text-zinc-100">14 + (0.05 × Amps)</span></div>
-                            <div>• Joint Type Modifier: <span class="text-zinc-100">${s.joint.includes('Root') || s.joint.includes('Butt') ? '0.94x (Open Root Protection)' : '1.0x (Standard Fillet Baseline)'}</span></div>
-                            <div class="border-t border-zinc-800 my-2 pt-2 text-theme font-bold">Formula: Final Voltage = [14 + (0.05 × Amps)] × Joint Modifier + Wire Offset</div>
                             <div class="text-theme font-bold">Calculated Dial Setting: ${specs.voltage} V</div>
                         </div>
                     </div>
@@ -170,7 +164,6 @@ const WeldingProcessRegistry = {
                         <h3 class="text-xl font-bold text-theme mb-2">4. Wire Feed Speed (Feeder Speed Dial)</h3>
                         <p class="text-zinc-400 mb-4">The app converts your target amps into actual meters per minute on your feeder dial. This ensures the wire feeds into the puddle fast enough to give you a smooth, steady arc without stuttering or popping.</p>
                         <div class="bg-zinc-950 p-4 rounded-lg font-mono text-sm space-y-2 border border-zinc-900">
-                            <div class="text-theme font-bold mb-1">Formula: Wire Speed = (Amps × 0.038) ÷ Wire Area</div>
                             <div class="text-emerald-400 font-bold">Feeder Setting: ${specs.wfs} m/min</div>
                         </div>
                     </div>
@@ -181,7 +174,6 @@ const WeldingProcessRegistry = {
                         <div class="bg-zinc-950 p-4 rounded-lg font-mono text-sm space-y-2 border border-zinc-900">
                             <div>• Selected Material Type: <span class="text-zinc-100">${s.steel || 'S355'}</span></div>
                             <div>• Tracked Carbon Equivalent (CEV): <span class="text-purple-400 font-bold">${cev.toFixed(2)}</span></div>
-                            <div>• Joint Configuration Factor: <span class="text-zinc-100">${s.joint.includes('T-Fillet') ? '3-Way Heat Sink (T-Fillet)' : '2-Way Heat Sink'}</span></div>
                             <div>• Calculated Combined Thickness (Tc): <span class="text-purple-400 font-bold">${tc}mm</span></div>
                         </div>
                     </div>
