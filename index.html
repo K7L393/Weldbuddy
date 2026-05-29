@@ -94,10 +94,10 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-3 gap-3 text-sm border-t border-zinc-800/60 pt-4 mt-4">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm border-t border-zinc-800/60 pt-4 mt-4">
                 <div>
                     <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Thickness</label>
-                    <select id="select-thickness" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                    <select id="select-thickness" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
                         <option value="6mm">6mm Material</option>
                         <option value="8mm">8mm Material</option>
                         <option value="10mm">10mm Material</option>
@@ -119,7 +119,7 @@
                 </div>
                 <div>
                     <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Wire Type</label>
-                    <select id="select-wire" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                    <select id="select-wire" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
                         <optgroup label="Solid Wire (GMAW)" class="bg-zinc-900 text-zinc-400">
                             <option value="1.0mm ER70S-6">1.0mm ER70S-6 Solid Wire</option>
                             <option value="1.2mm ER70S-6">1.2mm ER70S-6 Solid Wire</option>
@@ -136,7 +136,7 @@
                 </div>
                 <div>
                     <label id="label-joint" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Joint Type</label>
-                    <select id="select-joint" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                    <select id="select-joint" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
                         <option value="T-Fillet">T-Fillet Joint</option>
                         <option value="Butt Weld">Butt Weld (V-Groove)</option>
                         <option value="Open Corner">Open Corner Joint</option>
@@ -145,7 +145,7 @@
                 </div>
                 <div>
                     <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Machine Profile</label>
-                    <select id="select-machine" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                    <select id="select-machine" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
                         <option value="Generic Standard CV Box">Standard Plant Set</option>
                         <optgroup label="ESAB Welder Line" class="bg-zinc-900 text-zinc-400">
                             <option value="ESAB Warrior">ESAB Warrior (400i/500i)</option>
@@ -154,6 +154,7 @@
                             <option value="ESAB Aristo">ESAB Aristo Mig (400i/500i)</option>
                         </optgroup>
                         <optgroup label="Miller Welder Line" class="bg-zinc-900 text-zinc-400">
+							<option value="Miller Migmatic S400i">Miller Migmatic S400i</option>
                             <option value="Miller XMT">Miller XMT Set (350/450 Inverter)</option>
                             <option value="Miller Delta-Weld">Miller Delta-Weld Workshop Unit</option>
                             <option value="Miller Invision">Miller Invision (352/452 MPa)</option>
@@ -176,12 +177,22 @@
                 </div>
                 <div>
                     <label id="label-profile" class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Weld Size</label>
-                    <select id="select-profile" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
+                    <select id="select-profile" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer">
                         <option value="6mm Single-Pass">6mm Single-Pass Fillet</option>
                         <option value="8mm Single-Pass">8mm Single-Pass Fillet</option>
                         <option value="8mm Multi-Pass">8mm Multi-Pass (Root + Cap)</option>
                         <option value="10mm Multi-Pass">10mm Multi-Pass (3-Pass Run)</option>
                         <option value="12mm Multi-Pass">12mm Multi-Pass (Multi-Layer Matrix)</option>
+                    </select>
+                </div>
+                <div class="col-span-2 md:col-span-3">
+                    <label class="block text-xs uppercase font-bold text-zinc-500 mb-1 tracking-wide">Material Steel Grade (ISO 17671-2 Preheat Matrix)</label>
+                    <select id="select-steel" onchange="injectParam()" class="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl p-2.5 focus:outline-none cursor-pointer font-medium">
+                        <option value="S355">S355 / Grade 50 (Standard Medium Structural Carbon Baseline)</option>
+                        <option value="S275">S275 / A36 (Low Carbon Mild Steel / General Utility Fabrication)</option>
+                        <option value="S460">S460 / Grade 65 (High-Yield Strength Low-Alloy Structural Steel)</option>
+                        <option value="Corten">Corten Steel / ASTM A588 (Atmospheric Corrosion Resisting / Weathering)</option>
+                        <option value="Unknown">Unknown Grade Steel (Safe High Carbon Equivalent Fallback Limit)</option>
                     </select>
                 </div>
             </div>
@@ -301,17 +312,34 @@
                 </div>
 
                 <div class="bg-zinc-950 p-5 rounded-xl border border-zinc-800/80 space-y-4 shadow-xl">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50">
-                        <div>
-                            <h4 class="text-base font-bold uppercase tracking-wider text-zinc-200">Real-Time Heat Input</h4>
-                            <p class="text-xs text-zinc-500 font-mono mt-0.5">Monitors target heat thresholds dynamically</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between">
+                            <div class="flex justify-between items-start w-full">
+                                <div>
+                                    <h4 class="text-base font-bold uppercase tracking-wider text-zinc-200">Real-Time Heat Input</h4>
+                                    <p class="text-[11px] text-zinc-500 font-mono mt-0.5">Monitors thermal loading safety ceilings</p>
+                                </div>
+                                <button onclick="toggleNoviceGuide()" class="text-[11px] bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme px-2 py-1 rounded-lg transition-colors font-medium flex items-center gap-1">
+                                    <span id="novice-toggle-text">Guide</span>
+                                    <span id="novice-arrow" class="inline-block transition-transform duration-200">▼</span>
+                                </button>
+                            </div>
+                            <div class="text-right mt-4 md:mt-6">
+                                <span id="hi-result" class="text-3xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight transition-all duration-300">0.00 kJ/mm</span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="toggleNoviceGuide()" class="text-xs bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme px-3 py-1.5 rounded-lg transition-colors font-medium flex items-center gap-1.5">
-                                <span id="novice-toggle-text">Show Guide</span>
-                                <span id="novice-arrow" class="inline-block transition-transform duration-200" style="transform: rotate(0deg);">▼</span>
-                            </button>
-                            <span id="hi-result" class="text-3xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight transition-all duration-300">0.00 kJ/mm</span>
+
+                        <div id="iso-preheat-card" class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between border-l-2 border-l-emerald-500/40">
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" id="preheat-pulse-dot"></span>
+                                    <h4 class="text-base font-bold uppercase tracking-wider text-zinc-200">ISO 17671 Preheat Target</h4>
+                                </div>
+                                <p id="iso-calc-details" class="text-[11px] text-zinc-500 font-mono mt-0.5">Calculated via Material CEV & Combined Thickness</p>
+                            </div>
+                            <div class="text-right mt-4 md:mt-6">
+                                <span id="preheat-result-display" class="text-3xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300">20°C (Optional)</span>
+                            </div>
                         </div>
                     </div>
 
