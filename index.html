@@ -43,21 +43,21 @@
         .focus-theme:focus { border-color: rgb(var(--theme-primary)); --tw-ring-color: rgb(var(--theme-primary)); }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-center items-center overflow-hidden font-sans p-4 select-none">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen overflow-y-auto font-sans p-4 pb-12 select-none relative">
 
     <div id="bg-glow" class="absolute inset-0 pointer-events-none transition-all duration-700" style="background: radial-gradient(ellipse at center, var(--theme-glow) 0%, #09090b 100%);"></div>
 
-    <div class="absolute top-4 left-4 right-4 z-40 flex justify-between items-center max-w-2xl mx-auto w-full px-4 md:px-0">
+    <div class="w-full max-w-2xl mx-auto flex justify-between items-center mb-6 pt-2">
         <button onclick="openMathDashboard()" class="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-xl transition-all cursor-pointer group active:scale-95">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="text-sm font-mono text-zinc-400 group-hover:text-zinc-200 uppercase tracking-wider transition-colors">Engine: WeldBuddy Core v2.6 🔍</span>
+            <span class="text-xs md:text-sm font-mono text-zinc-400 group-hover:text-zinc-200 uppercase tracking-wider transition-colors">Engine: WeldBuddy Core v2.6 🔍</span>
         </button>
 
-        <div>
-            <button onclick="toggleThemeDropdown()" id="theme-btn" class="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl text-sm font-semibold uppercase tracking-wider flex items-center gap-2 shadow-xl transition-all">
+        <div class="relative">
+            <button onclick="toggleThemeDropdown()" id="theme-btn" class="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl text-xs md:text-sm font-semibold uppercase tracking-wider flex items-center gap-2 shadow-xl transition-all">
                 Palette 🎨
             </button>
-            <div id="theme-dropdown" class="hidden absolute right-4 mt-2 w-44 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-1 space-y-1">
+            <div id="theme-dropdown" class="hidden absolute right-0 mt-2 w-44 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-1 space-y-1 z-50">
                 <button onclick="setTheme('blue')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Arc Blue</button>
                 <button onclick="setTheme('orange')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-500"></span> Forge Orange</button>
                 <button onclick="setTheme('green')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500"></span> Shield Green</button>
@@ -66,27 +66,27 @@
         </div>
     </div>
 
-    <div id="app-container" class="w-full max-w-2xl relative z-10 flex flex-col items-center transition-all-custom mt-12">
+    <div id="app-container" class="w-full max-w-2xl mx-auto relative z-10 flex flex-col items-center transition-all-custom">
         <div id="branding" class="text-center mb-6 transition-all-custom">
-            <h1 id="brand-title" class="text-5xl font-black tracking-wider text-theme uppercase transition-all duration-500">
+            <h1 id="brand-title" class="text-4xl md:text-5xl font-black tracking-wider text-theme uppercase transition-all duration-500">
                 Weld Buddy
             </h1>
-            <p class="text-zinc-400 text-lg mt-2">Calculated Machine Settings & Setup Advice</p>
+            <p class="text-zinc-400 text-base md:text-lg mt-2">Calculated Machine Settings & Setup Advice</p>
         </div>
 
-        <div id="search-box" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl transition-all-custom">
+        <div id="search-box" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6 shadow-2xl transition-all-custom">
             <label class="block text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Select Your Welding Setup</label>
-            <p class="text-sm text-zinc-400 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 mb-4">
+            <p class="text-xs md:text-sm text-zinc-400 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 mb-4">
                 ⚙️ <span class="text-zinc-200 font-semibold">Calculator Active:</span> Dials are calculated using standard formulas. AI coaching is only active under the Weld Coach tab.
             </p>
 
             <div class="space-y-4">
                 <textarea id="user-input" rows="3" 
-                    class="w-full bg-zinc-950 text-zinc-100 placeholder-zinc-600 border border-zinc-800 rounded-xl py-3 px-4 focus:outline-none focus:ring-1 focus-theme resize-none transition-all text-lg"
+                    class="w-full bg-zinc-950 text-zinc-100 placeholder-zinc-600 border border-zinc-800 rounded-xl py-3 px-4 focus:outline-none focus:ring-1 focus-theme resize-none transition-all text-base md:text-lg"
                     placeholder="Type any custom booth notes here (e.g., tight grating gaps, awkward angle restrictions)..."></textarea>
                 
                 <button id="submit-btn" onclick="handleSubmit()" 
-                    class="w-full bg-theme bg-theme-hover text-zinc-950 font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 uppercase tracking-wider text-base">
+                    class="w-full bg-theme bg-theme-hover text-zinc-950 font-bold py-3.5 md:py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 uppercase tracking-wider text-sm md:text-base">
                     <span>Get Machine Settings</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
@@ -207,19 +207,19 @@
             <div class="flex items-center justify-between pb-3">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-sm font-bold uppercase tracking-wider text-zinc-400">Your Settings Dashboard</span>
+                    <span class="text-xs md:text-sm font-bold uppercase tracking-wider text-zinc-400">Your Settings Dashboard</span>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="minimizeResultsPanel()" class="text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800 font-semibold transition-all shadow-md">
+                    <button onclick="minimizeResultsPanel()" class="text-xs md:text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-950 px-2.5 md:px-3 py-1.5 rounded-lg border border-zinc-800 font-semibold transition-all shadow-md">
                         Minimize 🔽
                     </button>
-                    <button onclick="handleReset()" class="text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800 font-semibold transition-all shadow-md">
+                    <button onclick="handleReset()" class="text-xs md:text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-950 px-2.5 md:px-3 py-1.5 rounded-lg border border-zinc-800 font-semibold transition-all shadow-md">
                         New Setup
                     </button>
                 </div>
             </div>
             
-            <div class="flex gap-6 text-lg font-medium pb-px">
+            <div class="flex gap-6 text-base md:text-lg font-medium pb-px">
                 <button id="tab-specs-btn" onclick="switchTab('specs')" class="border-b-2 border-theme text-zinc-100 pb-3 transition-all">
                     Machine Dials ⚙️
                 </button>
@@ -229,33 +229,33 @@
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-6 text-lg leading-relaxed text-zinc-300" id="results-container">
-            <div id="shop-alert-banner" class="hidden p-4 rounded-xl text-base mb-4 border">
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 text-base md:text-lg leading-relaxed text-zinc-300" id="results-container">
+            <div id="shop-alert-banner" class="hidden p-4 rounded-xl text-sm md:text-base mb-4 border">
                 <span id="shop-alert-title" class="font-bold block uppercase tracking-wide text-xs mb-1"></span>
                 <span id="shop-alert-text"></span>
             </div>
 
-            <div id="note-banner-section" class="hidden bg-amber-500/10 border border-amber-500/20 text-amber-200 p-4 rounded-xl text-base mb-4">
+            <div id="note-banner-section" class="hidden bg-amber-500/10 border border-amber-500/20 text-amber-200 p-4 rounded-xl text-sm md:text-base mb-4">
                 <span class="font-bold block uppercase tracking-wide text-xs text-amber-400 mb-1">📝 Custom Booth Note Active:</span>
                 <span id="note-banner-text"></span>
             </div>
 
             <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex justify-between items-center mb-6">
                 <div>
-                    <h3 class="text-zinc-400 font-bold text-sm uppercase tracking-wider mb-1">Target Requirements Base</h3>
-                    <p id="target-requirements-display" class="text-zinc-500 text-sm font-mono"></p>
+                    <h3 class="text-zinc-400 font-bold text-xs uppercase tracking-wider mb-1">Target Requirements Base</h3>
+                    <p id="target-requirements-display" class="text-zinc-500 text-xs md:text-sm font-mono"></p>
                 </div>
-                <span class="text-xs bg-zinc-900 border border-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-mono uppercase tracking-tight shrink-0 select-none">✓ Verified Calculations</span>
+                <span class="text-[10px] md:text-xs bg-zinc-900 border border-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-mono uppercase tracking-tight shrink-0 select-none">✓ Verified Calculations</span>
             </div>
 
             <div id="panel-specs" class="space-y-6">
-                <h2 class="text-2xl font-bold text-zinc-100">Recommended Machine Dials</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-zinc-100">Recommended Machine Dials</h2>
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-inner flex flex-col justify-between">
                         <div>
-                            <span class="text-sm text-zinc-500 uppercase block font-medium">Wire Voltage</span>
-                            <span class="text-3xl font-black text-theme" id="display-volt">0.0 V</span>
+                            <span class="text-xs md:text-sm text-zinc-500 uppercase block font-medium">Wire Voltage</span>
+                            <span class="text-2xl md:text-3xl font-black text-theme" id="display-volt">0.0 V</span>
                         </div>
                         <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden mt-3">
                             <div id="bar-volt" class="bg-theme h-full transition-all duration-500" style="width: 0%"></div>
@@ -263,8 +263,8 @@
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-inner flex flex-col justify-between">
                         <div>
-                            <span class="text-sm text-zinc-500 uppercase block font-medium">Wire Feed Speed</span>
-                            <span class="text-3xl font-black text-theme" id="display-wfs">0.0 m/min</span>
+                            <span class="text-xs md:text-sm text-zinc-500 uppercase block font-medium">Wire Feed Speed</span>
+                            <span class="text-2xl md:text-3xl font-black text-theme" id="display-wfs">0.0 m/min</span>
                         </div>
                         <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden mt-3">
                             <div id="bar-wfs" class="bg-theme h-full transition-all duration-500" style="width: 0%"></div>
@@ -274,8 +274,8 @@
 
                 <div id="inductance-section" class="hidden bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
                     <div>
-                        <span id="inductance-label" class="text-sm text-zinc-500 uppercase block font-medium">Inductance Target Setting</span>
-                        <span id="inductance-value" class="text-2xl font-black text-purple-400 font-mono">50%</span>
+                        <span id="inductance-label" class="text-xs md:text-sm text-zinc-500 uppercase block font-medium">Inductance Target Setting</span>
+                        <span id="inductance-value" class="text-xl md:text-2xl font-black text-purple-400 font-mono">50%</span>
                     </div>
                     <div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden mt-3">
                         <div id="bar-inductance" class="bg-purple-500 h-full transition-all duration-500" style="width: 50%"></div>
@@ -283,40 +283,40 @@
                 </div>
 
                 <div id="multi-pass-section" class="hidden bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
-                    <h3 class="text-base font-bold uppercase tracking-wider text-theme">Pass Stacking Guide</h3>
-                    <div class="grid grid-cols-3 gap-2 text-sm font-mono">
+                    <h3 class="text-sm md:text-base font-bold uppercase tracking-wider text-theme">Pass Stacking Guide</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs md:text-sm font-mono">
                         <div class="bg-zinc-900 p-2.5 rounded-lg border border-zinc-800/80">
-                            <span class="text-xs text-zinc-500 block font-bold uppercase">Pass 1: Root</span>
+                            <span class="text-[10px] md:text-xs text-zinc-500 block font-bold uppercase">Pass 1: Root</span>
                             <span id="mp-pass1" class="text-zinc-200 block mt-1 font-bold">--</span>
-                            <span class="text-xs text-zinc-500 block mt-0.5">Deep penetration run. Keep it straight.</span>
+                            <span class="text-[10px] md:text-xs text-zinc-500 block mt-0.5">Deep penetration run. Keep it straight.</span>
                         </div>
                         <div class="bg-zinc-900 p-2.5 rounded-lg border border-zinc-800/80">
-                            <span class="text-xs text-zinc-500 block font-bold uppercase">Pass 2: Fills</span>
+                            <span class="text-[10px] md:text-xs text-zinc-500 block font-bold uppercase">Pass 2: Fills</span>
                             <span id="mp-pass2" class="text-zinc-200 block mt-1 font-bold">--</span>
-                            <span class="text-xs text-zinc-500 block mt-0.5">Max metal deposition. Watch sidewalls.</span>
+                            <span class="text-[10px] md:text-xs text-zinc-500 block mt-0.5">Max metal deposition. Watch sidewalls.</span>
                         </div>
                         <div class="bg-zinc-900 p-2.5 rounded-lg border border-zinc-800/80">
-                            <span class="text-xs text-zinc-500 block font-bold uppercase">Pass 3: Cap Pass</span>
+                            <span class="text-[10px] md:text-xs text-zinc-500 block font-bold uppercase">Pass 3: Cap Pass</span>
                             <span id="mp-pass3" class="text-zinc-200 block mt-1 font-bold">--</span>
-                            <span class="text-xs text-zinc-500 block mt-0.5">Zero undercut target. Smooth stringers.</span>
+                            <span class="text-[10px] md:text-xs text-zinc-500 block mt-0.5">Zero undercut target. Smooth stringers.</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="border-t border-zinc-800 pt-4">
-                    <h3 class="text-xl font-semibold text-zinc-200 mb-2">Essential Constants</h3>
-                    <ul class="list-disc list-inside space-y-2 text-zinc-400 text-base">
+                    <h3 class="text-lg md:text-xl font-semibold text-zinc-200 mb-2">Essential Constants</h3>
+                    <ul class="list-disc list-inside space-y-2 text-zinc-400 text-sm md:text-base">
                         <li>Shielding Gas: <span id="display-gas" class="font-bold text-zinc-300">--</span></li>
                         <div id="preheat-notice-zone"></div>
                     </ul>
                 </div>
 
-                <div class="bg-zinc-950 p-5 rounded-xl border border-zinc-800/80 space-y-4 shadow-xl">
+                <div class="bg-zinc-950 p-4 md:p-5 rounded-xl border border-zinc-800/80 space-y-4 shadow-xl">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between">
                             <div class="flex justify-between items-start w-full">
                                 <div>
-                                    <h4 class="text-base font-bold uppercase tracking-wider text-zinc-200">Real-Time Heat Input</h4>
+                                    <h4 class="text-sm md:text-base font-bold uppercase tracking-wider text-zinc-200">Real-Time Heat Input</h4>
                                     <p class="text-[11px] text-zinc-500 font-mono mt-0.5">Monitors thermal loading safety ceilings</p>
                                 </div>
                                 <button onclick="toggleNoviceGuide()" class="text-[11px] bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme px-2 py-1 rounded-lg transition-colors font-medium flex items-center gap-1">
@@ -325,7 +325,7 @@
                                 </button>
                             </div>
                             <div class="text-right mt-4 md:mt-6">
-                                <span id="hi-result" class="text-3xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight transition-all duration-300">0.00 kJ/mm</span>
+                                <span id="hi-result" class="text-2xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight transition-all duration-300">0.00 kJ/mm</span>
                             </div>
                         </div>
 
@@ -333,17 +333,17 @@
                             <div>
                                 <div class="flex items-center gap-1.5">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" id="preheat-pulse-dot"></span>
-                                    <h4 class="text-base font-bold uppercase tracking-wider text-zinc-200">ISO 17671 Preheat Target</h4>
+                                    <h4 class="text-sm md:text-base font-bold uppercase tracking-wider text-zinc-200">ISO 17671 Preheat Target</h4>
                                 </div>
                                 <p id="iso-calc-details" class="text-[11px] text-zinc-500 font-mono mt-0.5">Calculated via Material CEV & Combined Thickness</p>
                             </div>
                             <div class="text-right mt-4 md:mt-6">
-                                <span id="preheat-result-display" class="text-3xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300">20°C (Optional)</span>
+                                <span id="preheat-result-display" class="text-2xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300">20°C (Optional)</span>
                             </div>
                         </div>
                     </div>
 
-                    <div id="novice-guide-drawer" class="hidden bg-zinc-900/60 p-4 rounded-lg border border-zinc-800/60 text-sm text-zinc-400 space-y-3.5">
+                    <div id="novice-guide-drawer" class="hidden bg-zinc-900/60 p-4 rounded-lg border border-zinc-800/60 text-xs md:text-sm text-zinc-400 space-y-3.5">
                         <p><strong class="text-zinc-200">💡 Why this matters:</strong> Heat input determines thermal loading. Moving too slow overheats structural joints (turns <span class="text-rose-400 font-bold">Red</span>), risking warping or crystal yield cracking. Running too fast leaves the weld freezing cold with zero penetration (turns <span class="text-amber-400 font-bold">Yellow</span>).</p>
                         <div class="bg-zinc-950 border border-zinc-800 p-4 rounded-xl mt-2 flex flex-col md:flex-row justify-between items-center gap-4">
                             <div class="w-full md:w-3/5 space-y-2.5">
@@ -361,7 +361,7 @@
                             </div>
                             <div class="w-full md:w-2/5 flex flex-col items-center md:items-end justify-center pt-3 md:pt-0 md:pl-4 border-t md:border-t-0 md:border-l border-zinc-900/80">
                                 <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Calculated Speed</span>
-                                <span id="calc-speed-result" class="text-2xl md:text-3xl font-mono font-black text-emerald-400 tracking-tighter transition-all duration-300">0 mm/min</span>
+                                <span id="calc-speed-result" class="text-xl md:text-3xl font-mono font-black text-emerald-400 tracking-tighter transition-all duration-300">0 mm/min</span>
                             </div>
                         </div>
                     </div>
@@ -369,15 +369,15 @@
                     <div class="grid grid-cols-3 gap-2 pt-2">
                         <div>
                             <label class="block text-xs uppercase font-bold text-zinc-500 mb-0.5">Volts</label>
-                            <input id="hi-volt" type="number" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
+                            <input id="hi-volt" type="number" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-xs md:text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
                         </div>
                         <div>
                             <label class="block text-xs uppercase font-bold text-zinc-500 mb-0.5">Amps (Est.)</label>
-                            <input id="hi-amp" type="number" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
+                            <input id="hi-amp" type="number" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-xs md:text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
                         </div>
                         <div>
                             <label class="block text-xs uppercase font-bold text-zinc-500 mb-0.5">Speed (mm/min)</label>
-                            <input id="hi-ts" type="number" placeholder="e.g. 250" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
+                            <input id="hi-ts" type="number" placeholder="e.g. 250" oninput="calculateRealtimeHeatInput(false)" class="w-full bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-xs md:text-sm rounded p-1.5 focus:outline-none focus:border-zinc-700">
                         </div>
                     </div>
 
@@ -393,19 +393,19 @@
             </div>
 
             <div id="panel-tech" class="hidden space-y-6">
-                <h2 class="text-2xl font-bold text-zinc-100">Weld Coach Tips <span class="text-sm font-mono text-purple-400 font-normal">[AI Guided]</span></h2>
+                <h2 class="text-xl md:text-2xl font-bold text-zinc-100">Weld Coach Tips <span class="text-xs md:text-sm font-mono text-purple-400 font-normal">[AI Guided]</span></h2>
                 <div class="space-y-4">
                     <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
-                        <h4 class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Bead Manipulation (Stringer vs Weave)</h4>
-                        <p id="coach-bead-text" class="text-zinc-400 text-base"></p>
+                        <h4 class="text-theme font-bold text-xs md:text-sm uppercase tracking-wider mb-1">Bead Manipulation (Stringer vs Weave)</h4>
+                        <p id="coach-bead-text" class="text-zinc-400 text-sm md:text-base"></p>
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
-                        <h4 class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Joint Angle & Direction Strategy</h4>
-                        <p id="coach-angle-text" class="text-zinc-400 text-base"></p>
+                        <h4 class="text-theme font-bold text-xs md:text-sm uppercase tracking-wider mb-1">Joint Angle & Direction Strategy</h4>
+                        <p id="coach-angle-text" class="text-zinc-400 text-sm md:text-base"></p>
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-purple-950/30">
-                        <h4 class="text-theme font-bold text-sm uppercase tracking-wider mb-1">Torch Stick-Out (Distance from tip to work)</h4>
-                        <p id="coach-stickout-text" class="text-zinc-400 text-base"></p>
+                        <h4 class="text-theme font-bold text-xs md:text-sm uppercase tracking-wider mb-1">Torch Stick-Out (Distance from tip to work)</h4>
+                        <p id="coach-stickout-text" class="text-zinc-400 text-sm md:text-base"></p>
                     </div>
                 </div>
                 
@@ -414,9 +414,9 @@
                 <div class="space-y-2 mt-4">
                     <div class="flex justify-between items-center">
                         <label class="block text-xs uppercase font-bold text-zinc-500 tracking-wider">Quick Fixes</label>
-                        <span class="text-xs bg-purple-950/40 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded font-mono font-bold">Fix Defect</span>
+                        <span class="text-[10px] bg-purple-950/40 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded font-mono font-bold">Fix Defect</span>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 text-center text-sm font-bold">
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs md:text-sm font-bold">
                         <button onclick="triggerQuickTroubleshoot('undercut')" class="bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme p-2 rounded-xl transition-all">⚠️ Undercut</button>
                         <button onclick="triggerQuickTroubleshoot('lack of fusion')" class="bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme p-2 rounded-xl transition-all">🛑 Lack of Fusion</button>
                         <button onclick="triggerQuickTroubleshoot('porosity')" class="bg-zinc-950 border border-zinc-800 hover:border-theme text-zinc-400 hover:text-theme p-2 rounded-xl transition-all">💨 Porosity</button>
@@ -424,9 +424,9 @@
                 </div>
 
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-1.5 focus-within:border-zinc-700 focus-within:ring-1 focus-within:ring-zinc-700 transition-all flex gap-3 items-center mt-4">
-                    <input id="follow-up-input" type="text" placeholder="Ask Weld Coach to adjust settings (e.g., 'Correcting undercut...')" 
-                        class="flex-1 bg-transparent border-0 rounded-lg py-2 px-3 text-base text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-0">
-                    <button onclick="sendFollowUp()" class="bg-zinc-800 hover:bg-theme hover:text-zinc-950 text-zinc-200 px-4 py-2 rounded-lg font-semibold text-sm uppercase tracking-wider transition-all shadow-md shrink-0">
+                    <input id="follow-up-input" type="text" placeholder="Ask Weld Coach to adjust settings..." 
+                        class="flex-1 bg-transparent border-0 rounded-lg py-2 px-3 text-sm md:text-base text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-0">
+                    <button onclick="sendFollowUp()" class="bg-zinc-800 hover:bg-theme hover:text-zinc-950 text-zinc-200 px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm uppercase tracking-wider transition-all shadow-md shrink-0">
                         Ask Coach
                     </button>
                 </div>
@@ -438,13 +438,13 @@
         <div class="px-6 py-4 bg-zinc-900 border-b border-zinc-800 flex justify-between items-center sticky top-0">
             <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                <span class="text-base font-bold font-mono tracking-wide text-zinc-300 uppercase">Formula Engine Transparency Audit</span>
+                <span class="text-sm md:text-base font-bold font-mono tracking-wide text-zinc-300 uppercase">Formula Engine Transparency Audit</span>
             </div>
-            <button onclick="minimizeMathPanel()" class="text-sm bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 py-2 rounded-xl font-bold transition-all shadow-md">
+            <button onclick="minimizeMathPanel()" class="text-xs md:text-sm bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-2 rounded-xl font-bold transition-all shadow-md">
                 Close Audit View 🔼
             </button>
         </div>
-        <div class="flex-1 overflow-y-auto p-8 max-w-3xl mx-auto w-full space-y-6 leading-relaxed text-zinc-300 text-base" id="math-content-area"></div>
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 max-w-3xl mx-auto w-full space-y-6 leading-relaxed text-zinc-300 text-sm md:text-base" id="math-content-area"></div>
     </div>
 
     <script src="app.js"></script>
