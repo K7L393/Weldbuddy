@@ -194,7 +194,7 @@ function toggleThemeDropdown() {
 }
 
 function setTheme(theme) {
-    document.body.className = "bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-center items-center overflow-hidden font-sans p-4 select-none";
+    document.body.className = "bg-zinc-950 text-zinc-100 min-h-screen overflow-y-auto font-sans p-4 pb-12 select-none relative";
     if (theme !== 'blue') document.body.classList.add('theme-' + theme);
     toggleThemeDropdown();
 }
@@ -371,17 +371,17 @@ function evaluateIsoPreheatRequirements(currentHeatInput = null) {
 
     if (targetPreheat === 20) {
         preheatDisplay.innerText = "20°C (Optional)";
-        preheatDisplay.className = "text-3xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300";
+        preheatDisplay.className = "text-2xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300";
         preheatCard.className = "bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between border-l-2 border-l-emerald-500/40";
         dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
     } else if (targetPreheat === 50 || targetPreheat === 75) {
         preheatDisplay.innerText = `${targetPreheat}°C Target`;
-        preheatDisplay.className = "text-3xl md:text-4xl font-mono font-black text-amber-500 tracking-tight transition-all duration-300";
+        preheatDisplay.className = "text-2xl md:text-4xl font-mono font-black text-amber-500 tracking-tight transition-all duration-300";
         preheatCard.className = "bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between border-l-2 border-l-amber-500/50";
         dot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
     } else {
         preheatDisplay.innerText = `${targetPreheat}°C CRITICAL`;
-        preheatDisplay.className = "text-3xl md:text-4xl font-mono font-black text-rose-500 tracking-tight transition-all duration-300 animate-pulse";
+        preheatDisplay.className = "text-2xl md:text-4xl font-mono font-black text-rose-500 tracking-tight transition-all duration-300 animate-pulse";
         preheatCard.className = "bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between border-l-2 border-l-rose-500/60";
         dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping";
     }
@@ -403,8 +403,8 @@ function calculateRealtimeHeatInput(shouldLog = false) {
 
     if (!v || !a || !ts) {
         out.innerText = "0.00 kJ/mm";
-        out.className = "text-3xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight transition-all duration-300";
-        evaluateIsoPreheatRequirements(null); 
+        out.className = "text-2xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight transition-all duration-300";
+        document.getElementById('preheat-notice-zone').innerHTML = evaluateIsoPreheatRequirements(null); 
         return;
     }
 
@@ -414,13 +414,13 @@ function calculateRealtimeHeatInput(shouldLog = false) {
 
     let evaluation = "Optimal Pass";
     if (heatInput > 2.5) {
-        out.className = "text-3xl md:text-4xl font-mono font-black text-rose-500 animate-pulse tracking-tight transition-all duration-300";
+        out.className = "text-2xl md:text-4xl font-mono font-black text-rose-500 animate-pulse tracking-tight transition-all duration-300";
         evaluation = "Too Hot";
     } else if (heatInput < 0.8) {
-        out.className = "text-3xl md:text-4xl font-mono font-black text-amber-500 tracking-tight transition-all duration-300";
+        out.className = "text-2xl md:text-4xl font-mono font-black text-amber-500 tracking-tight transition-all duration-300";
         evaluation = "Cold-Lap Risk";
     } else {
-        out.className = "text-3xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300";
+        out.className = "text-2xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300";
     }
 
     const activeAdviceString = evaluateIsoPreheatRequirements(heatInput);
@@ -453,7 +453,7 @@ function updateHistoryUI() {
         return;
     }
     container.innerHTML = runHistory.map((h, i) => `
-        <div class="flex justify-between items-center text-sm font-mono border-b border-zinc-900/50 pb-1.5 last:border-0 pt-1">
+        <div class="flex justify-between items-center text-xs md:text-sm font-mono border-b border-zinc-900/50 pb-1.5 last:border-0 pt-1">
             <span class="text-zinc-500 font-bold">Run #${runHistory.length - i} [${h.time}]</span>
             <span class="text-zinc-400">${h.speed} mm/min &rarr;</span>
             <span class="${h.status.includes('Hot') ? 'text-rose-400' : h.status.includes('Cold') ? 'text-amber-400' : 'text-emerald-400'} font-black">${h.val} kJ/mm [${h.status}]</span>
@@ -527,7 +527,7 @@ function handleReset() {
     document.getElementById('hi-volt').value = '';
     document.getElementById('hi-amp').value = '';
     document.getElementById('hi-result').innerText = "0.00 kJ/mm";
-    document.getElementById('hi-result').className = "text-3xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight";
+    document.getElementById('hi-result').className = "text-2xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight";
     document.getElementById('chat-thread').innerHTML = '';
     document.getElementById('shop-alert-banner').classList.add('hidden');
 }
@@ -558,13 +558,13 @@ function renderInitialResponse() {
     if (s.thickness === "25mm+") thicknessValue = 28;
 
     if (thicknessValue >= 20 && specs.wireDiameter <= 1.0 && !isSinglePass) {
-        alertBanner.className = "bg-blue-500/10 border border-blue-500/20 text-blue-300 p-4 rounded-xl text-base mb-4 animate-fadeIn";
+        alertBanner.className = "bg-blue-500/10 border border-blue-500/20 text-blue-300 p-4 rounded-xl text-sm md:text-base mb-4 animate-fadeIn";
         alertTitle.className = "font-bold block uppercase tracking-wide text-xs text-blue-400 mb-1";
         alertTitle.innerText = "💡 Production Efficiency Tip:";
         alertText.innerText = "While 1.0mm wire easily achieves full code compliance on heavy sections via multi-pass stacking, stepping up to 1.2mm solid or cored wires on your next high-volume heavy run will significantly increase deposition rates and cut down your arc time.";
         alertBanner.classList.remove('hidden');
     } else if (thicknessValue <= 6 && specs.wireDiameter >= 1.6) {
-        alertBanner.className = "bg-rose-500/10 border border-rose-500/20 text-rose-300 p-4 rounded-xl text-base mb-4 animate-fadeIn";
+        alertBanner.className = "bg-rose-500/10 border border-rose-500/20 text-rose-300 p-4 rounded-xl text-sm md:text-base mb-4 animate-fadeIn";
         alertTitle.className = "font-bold block uppercase tracking-wide text-xs text-rose-400 mb-1";
         alertTitle.innerText = "⚠️ Shop Setup Alert:";
         alertText.innerText = "Large 1.6mm/2.0mm wire specs on light gauge material increase puddle burn-through risk. Step wire down for fine joint line management.";
@@ -620,13 +620,11 @@ function renderInitialResponse() {
         const parsedVolt = parseFloat(specs.voltage) || 0;
         const isOutOfPosition = ["3G", "4G", "6G"].includes(s.position);
         
-        // Dynamic Transfer Mode Verification 
         let isSprayTransfer = false;
         if (s.wire.includes("ER70S-6") && parsedVolt >= 22.5) isSprayTransfer = true;
         if (s.wire.includes("E71T-1M") && parsedVolt >= 24.5) isSprayTransfer = true;
 
         if (isSprayTransfer) {
-            // SPRAY TRANSFER LOGIC: Inductance has no physics impact on continuous streaming arcs
             if (s.machine === "ESAB Warrior") {
                 targetKnobSetting = "0 (Neutral Midpoint / Spray Arc Active)";
                 barWidth = "50%";
@@ -639,9 +637,7 @@ function renderInitialResponse() {
             }
             machineInductanceCoachNote = ` **Inductance Notice:** Your active configuration (**${specs.voltage}V**) operates in a high-energy **Spray Transfer Mode**. Because the wire melts in a continuous streaming spray rather than short-circuiting, altering your **${panelLabel}** has zero physical effect on the puddle. Leave the selector at standard neutral factory defaults.`;
         } else {
-            // SHORT-CIRCUIT TRANSFER LOGIC: Dynamically scale cycles
             if (isOutOfPosition) {
-                // Out of position requires an aggressive, fast-freezing pool
                 if (s.machine === "ESAB Warrior") {
                     targetKnobSetting = "-3 to -1 (Stiff Arc / Fast-Freeze)";
                     barWidth = "30%";
@@ -655,9 +651,7 @@ function renderInitialResponse() {
                 const rawValue = targetKnobSetting.split(' (')[0];
                 machineInductanceCoachNote = ` **Inductance Control Advice:** Since you are tracking a hard ${s.position} path using your ${s.machine}, drop your **${panelLabel}** down to ${rawValue}. This closes your plasma profile and accelerates puddle freezing to hold your supportive root shelf without interior sagging or blowback.`;
             } else {
-                // Downhand layout: Optimize for maximum sidewall wetting and spatter cancelation
                 if (parsedVolt < 17.5) {
-                    // Ultra-low voltage causes violent short-circuits. Force high inductance to soften explosions.
                     if (s.machine === "ESAB Warrior") {
                         targetKnobSetting = "+3 to +4 (High Inductance / Ultra-Soft)";
                         barWidth = "85%";
@@ -669,7 +663,6 @@ function renderInitialResponse() {
                         barWidth = "85%";
                     }
                 } else {
-                    // Standard smooth short-circuit layout
                     if (s.machine === "ESAB Warrior") {
                         targetKnobSetting = "+2 to +4 (Soft Arc / Fluid Puddle)";
                         barWidth = "80%";
