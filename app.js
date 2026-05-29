@@ -6,7 +6,6 @@ const parseBold = (str) => {
 // ========================================================
 // APPLICATION CONFIGURATION
 // ========================================================
-// Replace this with your secure live backend URL (from Railway or your Cloudflare Tunnel)
 const BACKEND_URL = "https://weldbuddy-coach.onrender.com/api/coach";
 
 // GLOBAL APP STATES
@@ -105,6 +104,17 @@ const WeldingProcessRegistry = {
             if (s.position === "4G") positionCoeff = 0.80;
             if (s.position === "6G") positionCoeff = 0.72;
 
+            let singleThickness = parseInt(s.thickness) || 6;
+            if (s.thickness === "25mm+") singleThickness = 28;
+            let tc = singleThickness * 2;
+            if (s.joint && s.joint.includes("T-Fillet")) tc = singleThickness * 3;
+
+            let cev = 0.45;
+            if (s.steel === "S275") cev = 0.40;
+            if (s.steel === "S460") cev = 0.48;
+            if (s.steel === "Corten") cev = 0.52;
+            if (s.steel === "Unknown") cev = 0.47;
+
             return `
                 <div class="space-y-6">
                     <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
@@ -148,6 +158,17 @@ const WeldingProcessRegistry = {
                             <div class="text-emerald-400 font-bold">Feeder Setting: ${specs.wfs} m/min</div>
                         </div>
                     </div>
+
+                    <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+                        <h3 class="text-xl font-bold text-purple-400 mb-2">5. BS EN ISO 17671-2 Hydrogen Cracking Prevention Audit</h3>
+                        <p class="text-zinc-400 mb-4">Calculates risk factors for hydrogen-induced cold cracking in the heat affected zone based on combined component thickness and material chemical tracking indexes.</p>
+                        <div class="bg-zinc-950 p-4 rounded-lg font-mono text-sm space-y-2 border border-zinc-900">
+                            <div>• Selected Material Type: <span class="text-zinc-100">${s.steel || 'S355'}</span></div>
+                            <div>• Tracked Carbon Equivalent (CEV): <span class="text-purple-400 font-bold">${cev.toFixed(2)}</span></div>
+                            <div>• Joint Configuration Factor: <span class="text-zinc-100">${s.joint.includes('T-Fillet') ? '3-Way Heat Sink (T-Fillet)' : '2-Way Heat Sink'}</span></div>
+                            <div>• Calculated Combined Thickness (Tc): <span class="text-purple-400 font-bold">${tc}mm</span></div>
+                        </div>
+                    </div>
                 </div>
             `;
         }
@@ -185,7 +206,7 @@ function toggleNoviceGuide() {
     
     if (drawer.classList.contains('hidden')) {
         drawer.classList.remove('hidden');
-        toggleText.innerText = "Hide Tutorial";
+        toggleText.innerText = "Hide Guide";
         arrow.style.transform = 'rotate(180deg)';
         isTutorialVisible = true;
     } else {
@@ -220,7 +241,8 @@ function getSelectedValues() {
         wire: document.getElementById('select-wire').value,
         joint: document.getElementById('select-joint').value,
         machine: document.getElementById('select-machine').value,
-        profile: document.getElementById('select-profile').value
+        profile: document.getElementById('select-profile').value,
+        steel: document.getElementById('select-steel').value
     };
 }
 
@@ -278,6 +300,101 @@ function injectParam() {
     if (isPanelOpen) renderInitialResponse();
 }
 
+// ========================================================
+// CORE MATHEMATICAL COMPUTATION ENGINE FOR ISO PREHEAT
+// ========================================================
+function evaluateIsoPreheatRequirements(currentHeatInput = null) {
+    const s = getSelectedValues();
+    const preheatDisplay = document.getElementById('preheat-result-display');
+    const preheatCard = document.getElementById('iso-preheat-card');
+    const detailsDisplay = document.getElementById('iso-calc-details');
+    const dot = document.getElementById('preheat-pulse-dot');
+    
+    if (!preheatDisplay) return "";
+
+    let singleThickness = 6;
+    if (s.thickness === "8mm") singleThickness = 8;
+    if (s.thickness === "10mm") singleThickness = 10;
+    if (s.thickness === "12mm") singleThickness = 12;
+    if (s.thickness === "15mm") singleThickness = 15;
+    if (s.thickness === "20mm") singleThickness = 20;
+    if (s.thickness === "25mm+") singleThickness = 28;
+
+    let tc = singleThickness * 2; 
+    if (s.joint && s.joint.includes("T-Fillet")) {
+        tc = singleThickness * 3; 
+    }
+
+    let cev = 0.45;
+    if (s.steel === "S275") cev = 0.40;
+    if (s.steel === "S460") cev = 0.48;
+    if (s.steel === "Corten") cev = 0.52;
+    if (s.steel === "Unknown") cev = 0.47;
+
+    let effectiveHI = currentHeatInput;
+    if (!effectiveHI) {
+        const currentEngine = WeldingProcessRegistry[activeProcess];
+        const specs = currentEngine.calculate(s);
+        const calcVolts = parseFloat(specs.voltage) || 0;
+        const calcAmps = parseInt(specs.amperage) || 0;
+        effectiveHI = (calcVolts * calcAmps * 60) / (280 * 1000);
+    }
+
+    let targetPreheat = 20; 
+
+    if (tc <= 20) {
+        targetPreheat = 20;
+    } else if (tc > 20 && tc <= 38) {
+        if (cev <= 0.40) {
+            targetPreheat = 20;
+        } else if (cev > 0.40 && cev <= 0.45) {
+            targetPreheat = effectiveHI < 1.1 ? 50 : 20;
+        } else if (cev > 0.45 && cev <= 0.49) {
+            targetPreheat = effectiveHI < 1.4 ? 75 : 50;
+        } else {
+            targetPreheat = 100;
+        }
+    } else if (tc > 38 && tc <= 60) {
+        if (cev <= 0.40) {
+            targetPreheat = 50;
+        } else if (cev > 0.40 && cev <= 0.45) {
+            targetPreheat = effectiveHI < 1.3 ? 75 : 50;
+        } else if (cev > 0.45 && cev <= 0.49) {
+            targetPreheat = effectiveHI < 1.6 ? 100 : 75;
+        } else {
+            targetPreheat = 125;
+        }
+    } else {
+        if (cev <= 0.45) targetPreheat = 100;
+        else targetPreheat = 150;
+    }
+
+    if (targetPreheat === 20) {
+        preheatDisplay.innerText = "20°C (Optional)";
+        preheatDisplay.className = "text-3xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300";
+        preheatCard.className = "bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between border-l-2 border-l-emerald-500/40";
+        dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+    } else if (targetPreheat === 50 || targetPreheat === 75) {
+        preheatDisplay.innerText = `${targetPreheat}°C Target`;
+        preheatDisplay.className = "text-3xl md:text-4xl font-mono font-black text-amber-500 tracking-tight transition-all duration-300";
+        preheatCard.className = "bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between border-l-2 border-l-amber-500/50";
+        dot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+    } else {
+        preheatDisplay.innerText = `${targetPreheat}°C CRITICAL`;
+        preheatDisplay.className = "text-3xl md:text-4xl font-mono font-black text-rose-500 tracking-tight transition-all duration-300 animate-pulse";
+        preheatCard.className = "bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 flex flex-col justify-between border-l-2 border-l-rose-500/60";
+        dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping";
+    }
+
+    detailsDisplay.innerText = `Tracked CEV: ${cev.toFixed(2)} // Joint Heat Sink Mass (Tc): ${tc}mm`;
+
+    if (targetPreheat > 20) {
+        return `<li class="text-amber-400 font-semibold">⚠️ ISO 17671-2 Code Preheat Active: Uniformly soak material footprint to a minimum of ${targetPreheat}°C before striking arc. Hold interpass thermal limit below 220°C to secure structural mechanical parameters.</li>`;
+    } else {
+        return `<li>Material preheat is non-mandatory under base code parameters for this layout. Ensure joint faces are clean of chilled ambient condensation before welding.</li>`;
+    }
+}
+
 function calculateRealtimeHeatInput(shouldLog = false) {
     const v = parseFloat(document.getElementById('hi-volt').value) || 0;
     const a = parseFloat(document.getElementById('hi-amp').value) || 0;
@@ -287,6 +404,7 @@ function calculateRealtimeHeatInput(shouldLog = false) {
     if (!v || !a || !ts) {
         out.innerText = "0.00 kJ/mm";
         out.className = "text-3xl md:text-4xl font-mono font-black text-zinc-600 tracking-tight transition-all duration-300";
+        evaluateIsoPreheatRequirements(null); 
         return;
     }
 
@@ -304,6 +422,9 @@ function calculateRealtimeHeatInput(shouldLog = false) {
     } else {
         out.className = "text-3xl md:text-4xl font-mono font-black text-emerald-400 tracking-tight transition-all duration-300";
     }
+
+    const activeAdviceString = evaluateIsoPreheatRequirements(heatInput);
+    document.getElementById('preheat-notice-zone').innerHTML = activeAdviceString;
 
     if (shouldLog) {
         runHistory.unshift({
@@ -393,6 +514,7 @@ function handleReset() {
     document.getElementById('select-joint').value = 'T-Fillet';
     document.getElementById('select-machine').value = 'Generic Standard CV Box';
     document.getElementById('select-profile').value = '6mm Single-Pass';
+    document.getElementById('select-steel').value = 'S355';
     
     document.getElementById('display-volt').innerText = "0.0 V";
     document.getElementById('bar-volt').style.width = "0%";
@@ -472,12 +594,20 @@ function renderInitialResponse() {
         mpSection.classList.add('hidden');
     }
 
+    // ========================================================
+    // DYNAMIC MATHEMATICAL INDUCTANCE COMPUTATION ENGINE
+    // ========================================================
     const indSection = document.getElementById('inductance-section');
     let machineInductanceCoachNote = "";
-    let supportsVariableInductance = ["ESAB Warrior", "ESAB Rebel", "ESAB Aristo", "Miller XMT", "Miller Invision", "Lincoln Power Wave", "Kemppi FastMig", "Kemppi X5"].includes(s.machine);
+    
+    let supportsVariableInductance = [
+        "ESAB Warrior", "ESAB Rebel", "ESAB Aristo", "Miller XMT", 
+        "Miller Invision", "Lincoln Power Wave", "Kemppi FastMig", 
+        "Kemppi X5", "Miller Migmatic S400i"
+    ].includes(s.machine);
 
     if (supportsVariableInductance) {
-        let targetKnobSetting = "50% (Standard Mid-Way Position)";
+        let targetKnobSetting = "";
         let barWidth = "50%";
         let panelLabel = "Inductance Knob";
         
@@ -485,15 +615,75 @@ function renderInitialResponse() {
         if (s.machine === "Miller XMT" || s.machine === "Miller Invision") panelLabel = "Inductance / Dig Control Switch";
         if (s.machine === "Lincoln Power Wave") panelLabel = "Electronic Pinch Control Parameter";
         if (s.machine === "Kemppi FastMig" || s.machine === "Kemppi X5") panelLabel = "WiseArc Puddle Dynamics Regulator";
+        if (s.machine === "Miller Migmatic S400i") panelLabel = "Digital LCD Inductance Menu Parameter";
         
-        if (s.position === "3G" || s.position === "4G" || s.position === "6G") {
-            targetKnobSetting = "25% - 35% (Stiff Arc / Fast-Freezing Puddle)";
-            barWidth = "30%";
-            machineInductanceCoachNote = ` **Inductance Control Advice:** Since you are tracking a hard ${s.position} path using your ${s.machine}, drop your **${panelLabel}** down to 25%-35%. This closes your plasma profile and accelerates puddle freezing to hold your supportive root shelf without interior sagging or blowback.`;
-        } else if (s.position === "1G" || s.position === "2G") {
-            targetKnobSetting = "70% - 80% (Soft Arc / Smooth Fluid Puddle)";
-            barWidth = "75%";
-            machineInductanceCoachNote = ` **Inductance Control Advice:** For this horizontal layout using your ${s.machine}, twist your front panel **${panelLabel}** up to 70%-80%. This widens your arc flame, flattens the bead cross-section, and washes the edges flat into the side borders to cancel any chance of undercut.`;
+        const parsedVolt = parseFloat(specs.voltage) || 0;
+        const isOutOfPosition = ["3G", "4G", "6G"].includes(s.position);
+        
+        // Dynamic Transfer Mode Verification 
+        let isSprayTransfer = false;
+        if (s.wire.includes("ER70S-6") && parsedVolt >= 22.5) isSprayTransfer = true;
+        if (s.wire.includes("E71T-1M") && parsedVolt >= 24.5) isSprayTransfer = true;
+
+        if (isSprayTransfer) {
+            // SPRAY TRANSFER LOGIC: Inductance has no physics impact on continuous streaming arcs
+            if (s.machine === "ESAB Warrior") {
+                targetKnobSetting = "0 (Neutral Midpoint / Spray Arc Active)";
+                barWidth = "50%";
+            } else if (s.machine === "Miller Migmatic S400i") {
+                targetKnobSetting = "100% (Nominal Baseline / Spray Arc Active)";
+                barWidth = "50%";
+            } else {
+                targetKnobSetting = "50% (Neutral / Spray Arc Active)";
+                barWidth = "50%";
+            }
+            machineInductanceCoachNote = ` **Inductance Notice:** Your active configuration (**${specs.voltage}V**) operates in a high-energy **Spray Transfer Mode**. Because the wire melts in a continuous streaming spray rather than short-circuiting, altering your **${panelLabel}** has zero physical effect on the puddle. Leave the selector at standard neutral factory defaults.`;
+        } else {
+            // SHORT-CIRCUIT TRANSFER LOGIC: Dynamically scale cycles
+            if (isOutOfPosition) {
+                // Out of position requires an aggressive, fast-freezing pool
+                if (s.machine === "ESAB Warrior") {
+                    targetKnobSetting = "-3 to -1 (Stiff Arc / Fast-Freeze)";
+                    barWidth = "30%";
+                } else if (s.machine === "Miller Migmatic S400i") {
+                    targetKnobSetting = "50% - 75% (Stiff Arc / Fast-Freeze)";
+                    barWidth = "35%";
+                } else {
+                    targetKnobSetting = "25% - 35% (Stiff Arc / Fast-Freeze)";
+                    barWidth = "30%";
+                }
+                const rawValue = targetKnobSetting.split(' (')[0];
+                machineInductanceCoachNote = ` **Inductance Control Advice:** Since you are tracking a hard ${s.position} path using your ${s.machine}, drop your **${panelLabel}** down to ${rawValue}. This closes your plasma profile and accelerates puddle freezing to hold your supportive root shelf without interior sagging or blowback.`;
+            } else {
+                // Downhand layout: Optimize for maximum sidewall wetting and spatter cancelation
+                if (parsedVolt < 17.5) {
+                    // Ultra-low voltage causes violent short-circuits. Force high inductance to soften explosions.
+                    if (s.machine === "ESAB Warrior") {
+                        targetKnobSetting = "+3 to +4 (High Inductance / Ultra-Soft)";
+                        barWidth = "85%";
+                    } else if (s.machine === "Miller Migmatic S400i") {
+                        targetKnobSetting = "150% - 180% (High Inductance / Ultra-Soft)";
+                        barWidth = "85%";
+                    } else {
+                        targetKnobSetting = "80% - 90% (High Inductance / Ultra-Soft)";
+                        barWidth = "85%";
+                    }
+                } else {
+                    // Standard smooth short-circuit layout
+                    if (s.machine === "ESAB Warrior") {
+                        targetKnobSetting = "+2 to +4 (Soft Arc / Fluid Puddle)";
+                        barWidth = "80%";
+                    } else if (s.machine === "Miller Migmatic S400i") {
+                        targetKnobSetting = "130% - 160% (Soft Arc / Fluid Puddle)";
+                        barWidth = "78%";
+                    } else {
+                        targetKnobSetting = "70% - 80% (Soft Arc / Fluid Puddle)";
+                        barWidth = "75%";
+                    }
+                }
+                const rawValue = targetKnobSetting.split(' (')[0];
+                machineInductanceCoachNote = ` **Inductance Control Advice:** For this horizontal layout using your ${s.machine}, twist your front panel **${panelLabel}** up to ${rawValue}. This widens your arc flame, flattens the bead cross-section, and washes the edges flat into the side borders to cancel any chance of undercut.`;
+            }
         }
 
         document.getElementById('inductance-label').innerText = `Recommended ${panelLabel}`;
@@ -506,7 +696,7 @@ function renderInitialResponse() {
             machineInductanceCoachNote = ` **Machine Profile Notice:** Your heavy duty ${s.machine} operates on factor-optimized internal inductance curves. Trust the unit's short-circuit dampening adjustments automatically and focus strictly on consistent gun travel speed rates.`;
         }
     }
-
+	
     let rawBeadText = "Select parameters to generate stringer tracking guidelines.";
     let rawTorchText = "Select choices above to calculate code-compliant gun angle split data.";
     let rawStickText = "Select wire consumable options to calculate target extension distances.";
@@ -548,19 +738,15 @@ function renderInitialResponse() {
     document.getElementById('coach-angle-text').innerHTML = parseBold(rawTorchText);
     document.getElementById('coach-stickout-text').innerHTML = parseBold(rawStickText);
 
-    const noticeZone = document.getElementById('preheat-notice-zone');
-    if (s.thickness === "25mm+") {
-        noticeZone.innerHTML = `<li class="text-amber-400 font-semibold">⚠️ AWS Code Preheat Required: Maintain a minimum soaked preheat footprint of 100°C. Monitor interpass thermal ceiling threshold to hold it below 230°C to preserve yield metrics.</li>`;
-    } else {
-        noticeZone.innerHTML = `<li>Preheat is optional under AWS specifications for standard structural carbon framing under 20mm, unless base structural plates are highly chilled.</li>`;
-    }
+    const initialPreheatAdviceString = evaluateIsoPreheatRequirements(null);
+    document.getElementById('preheat-notice-zone').innerHTML = initialPreheatAdviceString;
 
     const drawer = document.getElementById('novice-guide-drawer');
     const toggleText = document.getElementById('novice-toggle-text');
     const arrow = document.getElementById('novice-arrow');
     if (isTutorialVisible) {
         drawer.classList.remove('hidden');
-        toggleText.innerText = "Hide Tutorial";
+        toggleText.innerText = "Hide Guide";
         arrow.style.transform = 'rotate(180deg)';
     } else {
         drawer.classList.add('hidden');
@@ -646,6 +832,7 @@ function sendFollowUp() {
                 - Joint Type: ${s.joint || 'T-Fillet Joint'}
                 - Machine Profile: ${s.machine || 'Standard Plant Set'}
                 - Weld Size: ${s.profile || '6mm Single-Pass'}
+                - Material Steel Grade: ${s.steel || 'S355'}
                 - CURRENT CALCULATED DIAL VOLTAGE: ${specs.voltage} V
                 - CURRENT CALCULATED DIAL WIRE FEED SPEED: ${specs.wfs} m/min
                 - ESTIMATED TARGET CURRENT CONSTANT: ${specs.amperage} Amps
@@ -665,8 +852,7 @@ function sendFollowUp() {
     fetch(BACKEND_URL, {
         method: "POST",
         headers: { 
-            "Content-Type": "application/json",
-            // The Localtunnel bypass line has been completely removed from here!
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(payload)
     })
