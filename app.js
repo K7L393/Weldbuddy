@@ -40,20 +40,36 @@ const WeldingProcessRegistry = {
             let minAmp = 130;
             let maxAmp = 330;
             
+            // ========================================================
+            // EXPANDED CODE-COMPLIANT MANUFACTURER SPEC LIMITS MATRIX
+            // ========================================================
             if (s.wire && s.wire.includes("ER70S-6")) {
+                // SOLID WIRE SPECIFICATION WINDOWS
                 if (isOutOfPosition) {
                     minAmp = wireDiameter === 1.0 ? 85 : 105;
-                    maxAmp = wireDiameter === 1.0 ? 125 : 145;
+                    maxAmp = wireDiameter === 1.0 ? 135 : 155; 
                 } else {
                     minAmp = wireDiameter === 1.0 ? 150 : 180;
-                    maxAmp = wireDiameter === 1.0 ? 220 : 280;
+                    maxAmp = wireDiameter === 1.0 ? 260 : 320; // Unlocks full 28V (1.0mm) and 31V (1.2mm) Spray Windows
                 }
             } else if (s.wire && s.wire.includes("E71T-1M")) {
-                minAmp = wireDiameter === 1.2 ? 130 : 160;
-                maxAmp = isOutOfPosition ? (wireDiameter === 1.2 ? 190 : 210) : (wireDiameter === 1.2 ? 270 : 320);
+                // GAS-SHIELDED DUAL-SHIELD FLUX-CORED WINDOWS
+                if (isOutOfPosition) {
+                    minAmp = wireDiameter === 1.2 ? 130 : 160;
+                    maxAmp = wireDiameter === 1.2 ? 210 : 230; // Expanded to support high-performance vertical/overhead shelves
+                } else {
+                    minAmp = wireDiameter === 1.2 ? 130 : 160;
+                    maxAmp = wireDiameter === 1.2 ? 300 : 360; // Unlocks heavy-duty downhand production thresholds
+                }
             } else if (s.wire && s.wire.includes("E71T-8")) {
-                minAmp = wireDiameter === 1.6 ? 140 : 170;
-                maxAmp = isOutOfPosition ? 210 : 290;
+                // SELF-SHIELDED MECHANICAL GASLESS CORED WINDOWS
+                if (isOutOfPosition) {
+                    minAmp = wireDiameter === 1.6 ? 140 : 170;
+                    maxAmp = wireDiameter === 1.6 ? 215 : 240; 
+                } else {
+                    minAmp = wireDiameter === 1.6 ? 140 : 170;
+                    maxAmp = wireDiameter === 1.6 ? 260 : 310; 
+                }
             }
 
             targetAmperage = Math.min(Math.max(targetAmperage, minAmp), maxAmp);
